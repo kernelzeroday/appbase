@@ -74,7 +74,7 @@ export const SigninScreen: React.FC<Props> = (props) => {
   return (
     <Center width="100%">
       <Box safeArea p="2" py="8" w="90%">
-        <Heading>Welcome</Heading>
+        <Heading>Royal Administration Time Punch</Heading>
         <Column space={3} mt="5">
           <FormControl>
             <FormControl.Label>Email</FormControl.Label>

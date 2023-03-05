@@ -45,7 +45,7 @@
     "@react-navigation/native-stack": "^6.9.1",
     "@reduxjs/toolkit": "1.8.5",
     "axios": "0.27.2",
-    "expo": "^46.0.17",
+    "expo": "^46.0.20",
     "expo-asset": "~8.6.1",
     "expo-constants": "~13.2.4",
     "expo-device": "~4.3.0",
