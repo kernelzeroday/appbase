@@ -101,3 +101,18 @@ def get_user_by_id(id: int):
         WHERE id = %s
         """, (id))
     return user
+
+#get user by email and return user
+def get_user_by_email(email: str):
+    user = query_get("""
+        SELECT 
+            user.id,
+            user.first_name,
+            user.last_name,
+            user.email,
+            user.password_hash
+        FROM user 
+        WHERE email = %s
+        """, (email))
+    return user
+
