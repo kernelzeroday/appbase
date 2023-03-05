@@ -22,6 +22,19 @@ class ApiService {
   getUsers() {
     return http.get<UserModel[]>('/v1/users');
   }
+  clockIn() {
+    return http.post('/v1/clockin');
+  }
+  clockOut() {
+    return http.post('/v1/clockout');
+  }
+  getTimesheet() {
+    return http.get('/v1/timesheet');
+  }
+
+
 }
+
+
 
 export default new ApiService();
