@@ -4,7 +4,8 @@ from database.query import query_get, query_put, query_update
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id
+from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id, get_user_by_email
+import datetime
 
 app = FastAPI()
 
@@ -123,3 +124,49 @@ def not_secret_data_api():
     This not-secret API is just for testing.
     """
     return 'Not secret data'
+
+
+#time keeping api for timecard application. punch in, punch out, and view timecard
+
+@app.get('/v1/timecard')
+def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This timecard API allow you to fetch specific user data.
+    """
+    token = credentials.credentials
+    if (auth_handler.decode_token(token)):
+        user = get_user_by_id(user_id)
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+
+@app.post('/v1/clockin/')
+def clockin_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This clockin API allow you to set clock in time.
+    """
+    token = credentials.credentials
+    #decode user from token
+    user = auth_handler.decode_token(token)
+    #print the user to the console
+    print("Logged in as: " + user)
+    #get the user object from the users email
+    user = get_user_by_email(user)
+    #print the user to the console
+    print(user)
+    #get the user id from the user object
+    
+    #print the user id to the console
+
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+
+@app.post('/v1/clockout')
+def clockout_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This clockout API allow you to set clock out time.
+    """
+    token = credentials.credentials
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
