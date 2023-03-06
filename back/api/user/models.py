@@ -18,6 +18,7 @@ class UserUpdateRequestModel(BaseModel):
     password: str
     first_name: str
     last_name: str
+    timezone: str
 
 
 class UserResponseModel(BaseModel):
@@ -25,6 +26,10 @@ class UserResponseModel(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    timezone: str
+    clock_in_times: List[str] = []
+    clock_out_times: List[str] = []
+
 
 
 class TokenModel(BaseModel):
@@ -35,3 +40,5 @@ class TokenModel(BaseModel):
 class UserAuthResponseModel(BaseModel):
     token: TokenModel
     user: UserResponseModel
+
+
