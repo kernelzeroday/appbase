@@ -12,6 +12,8 @@ import {
   Button,
   Row,
   Center,
+  Select,
+  CheckIcon,
 } from 'native-base';
 
 // navigation
@@ -26,12 +28,14 @@ export const SignupScreen: React.FC<Props> = (props) => {
   const [first_name, onChangeFirstName] = React.useState('');
   const [last_name, onChangeLastName] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const [user_timezone, onSetTimezone] = React.useState('');
   const onPressSignup = async () => {
     const values = {
       email,
       password,
       first_name,
       last_name,
+      user_timezone,
     };
     ApiService.signup(values).then(() => {
       toast.show({
@@ -70,6 +74,36 @@ export const SignupScreen: React.FC<Props> = (props) => {
               type="password"
             />
           </FormControl>
+          {/*Timezone*/} 
+            <FormControl.Label>Timezone</FormControl.Label>
+            <Select
+              selectedValue={user_timezone}
+              minWidth={200}
+              accessibilityLabel="Select your timezone"
+              placeholder="Select your timezone"
+              onValueChange={(itemValue) => onSetTimezone(itemValue)}
+              _selectedItem={{
+                bg: 'cyan.600',
+                endIcon: <CheckIcon size={4} />,
+              }}
+            >
+              <Select.Item label="America/New_York" value="America/New_York" />
+              <Select.Item label="America/Chicago" value="America/Chicago" />
+              <Select.Item label="America/Denver" value="America/Denver" />
+              <Select.Item label="America/Los_Angeles" value="America/Los_Angeles" />
+              <Select.Item label="America/Anchorage" value="America/Anchorage" />
+              <Select.Item label="America/Phoenix" value="America/Phoenix" />
+              <Select.Item label="America/Adak" value="America/Adak" />
+              <Select.Item label="Pacific/Honolulu" value="Pacific/Honolulu" />
+              <Select.Item label="Asia/Tokyo" value="Asia/Tokyo" />
+              <Select.Item label="Asia/Seoul" value="Asia/Seoul" />
+              <Select.Item label="Asia/Shanghai" value="Asia/Shanghai" />
+              <Select.Item label="Asia/Hong_Kong" value="Asia/Hong_Kong" />
+              <Select.Item label="Asia/Taipei" value="Asia/Taipei" />
+
+            </Select>
+            
+            
           <Button onPress={onPressSignup} mt="2">
             Sign up
           </Button>
