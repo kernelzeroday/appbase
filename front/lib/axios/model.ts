@@ -8,6 +8,9 @@ export interface UserRegisterOrUpdateModel {
   email: string;
   first_name: string;
   last_name: string;
+  timezone: string;
+  clock_in_time: string;
+  clock_out_time: string;
 }
 
 export interface UserModel {
@@ -15,6 +18,9 @@ export interface UserModel {
   email: string;
   first_name: string;
   last_name: string;
+  timezone: string;
+  clock_in_time: string;
+  clock_out_time: string;
 }
 
 export interface Token {

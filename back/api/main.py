@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout
-import datetime
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -43,7 +43,7 @@ def signup_api(user_details: SignUpRequestModel):
     refresh_token = auth_handler.encode_refresh_token(user_details.email)
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
-
+# test
 @app.post('/v1/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
     """
@@ -104,18 +104,21 @@ def update_user_api(user_details: UserUpdateRequestModel, credentials: HTTPAutho
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 
-@app.post('/v1/clockin/')
+@app.post('/v1/clockin')
 def clockin_api(credentials: HTTPAuthorizationCredentials = Security(security)):
     """
     This clockin API allow you to set clock in time.
     """
     token = credentials.credentials
+    
     #decode user from token
     user = auth_handler.decode_token(token)
+    
     #print the user to the console
     print("Logged in as: " + user)
-    #get the user object from the users email
+
     user = save_user_time_by_email_clockin(user)
+
     #print the user to the console
     print(user)
     #get the user id from the user object
@@ -132,6 +135,22 @@ def clockout_api(credentials: HTTPAuthorizationCredentials = Security(security))
     This clockout API allow you to set clock out time.
     """
     token = credentials.credentials
+    
+    #decode user from token
+    user = auth_handler.decode_token(token)
+    
+    #print the user to the console
+    print("Logged in as: " + user)
+    
+    #get the user object from the users email and provide the clock out time
+    user = save_user_time_by_email_clockout(user)
+
+    #print the user to the console
+    print(user)
+    #get the user id from the user object
+    
+    #print the user id to the console
+
     if (auth_handler.decode_token(token)):
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
