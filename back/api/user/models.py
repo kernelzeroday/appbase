@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-
+from typing import List
 
 class SignInRequestModel(BaseModel):
     email: str
@@ -11,6 +11,7 @@ class SignUpRequestModel(BaseModel):
     password: str
     first_name: str
     last_name: str
+    user_timezone: str
 
 
 class UserUpdateRequestModel(BaseModel):
@@ -18,7 +19,7 @@ class UserUpdateRequestModel(BaseModel):
     password: str
     first_name: str
     last_name: str
-    timezone: str
+    user_timezone: str
 
 
 class UserResponseModel(BaseModel):
@@ -26,7 +27,7 @@ class UserResponseModel(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
-    timezone: str
+    user_timezone: str
     clock_in_times: List[str] = []
     clock_out_times: List[str] = []
 
