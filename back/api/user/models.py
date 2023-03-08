@@ -40,6 +40,12 @@ class ClockTimesCreateModel(BaseModel):
     clock_in_time: datetime = None
     clock_out_time: datetime = None
 
+#this class is the clocktime response model, this class contains id, clock_in_time, and clock_out_time
+class ClockTimesResponseModel(BaseModel):
+    id: int
+    clock_in_time: datetime = None
+    clock_out_time: datetime = None
+
 
 class TokenModel(BaseModel):
     access_token: str
@@ -51,3 +57,6 @@ class UserAuthResponseModel(BaseModel):
     user: UserResponseModel
 
 
+# this class is the timesheet response model, this class will contain an array of clock objects
+class TimesheetResponseModel(BaseModel):
+    clock_times: List[ClockTimesResponseModel] = []

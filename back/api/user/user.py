@@ -125,22 +125,18 @@ def get_user_by_id(id: int):
     return user
 
 
-#get user by email and return time data
-def get_user_timesheet_by_email(user_model: UserResponseModel):
+def get_user_timesheet_by_email(email: str):
     user = query_get("""
         SELECT 
-            user.id,
-            user.first_name,
-            user.last_name,
-            user.email,
-            user.user_timezone,
-            clock_in_time,
-            clock_out_time
+            clock_times.clock_in_time,
+            clock_times.clock_out_time
         FROM user
-        JOIN clock_times ON user.id = clock_times.user_id 
+        LEFT JOIN clock_times ON user.id = clock_times.user_id 
         WHERE email = %s
-        """, (user_model.email,))
-    return user[0]
+        """, (email,))
+    
+    
+    return user
 
 # get users timezone by email and return only the timezone data
 def get_user_timezone_by_email(email: str):
@@ -157,8 +153,7 @@ def get_user_timezone_by_email(email: str):
 def save_user_time_by_email_clockin(email: str):
     # get the user object from the user's email
     user_dict = get_user_timezone_by_email(email)
-
-    print(user_dict)
+    user_id = user_dict['id']
 
     # convert the user dictionary to a UserResponseModel object
     user = UserTimeZoneResponseModel(**user_dict)
@@ -166,29 +161,36 @@ def save_user_time_by_email_clockin(email: str):
     # get the timezone of the user
     set_timezone = pytz.timezone(user.user_timezone)
 
-    # get the current time in the user's timezone
-    clock_in = datetime.now(set_timezone)
+    # check if the user has an existing clock-in record without a clock-out time
+    existing_record = query_get("""
+        SELECT * FROM clock_times WHERE user_id = %s AND clock_out_time IS NULL;
+    """, (user_id))
 
-    # create a new ClockTimesCreateModel instance with the user's email and clock-in time
-    clock_time = ClockTimesCreateModel(id=user.id, clock_in=clock_in)
+    #check if the user has any time records
+    if len(existing_record) == 0:
+            
+        # get the current time in the user's timezone
+        clock_in = datetime.now(set_timezone)
 
-    print(user.dict())
+        # save the new clock-in time to the database
+        query_put("""
+            INSERT INTO clock_times (user_id, clock_in_time, clock_out_time)
+            VALUES (%s, %s, NULL);
+        """,
+            (user_id, clock_in)
+        )
 
-    # save the new clock-in time to the database
-    query_put("""
-        INSERT INTO clock_times (user_id, clock_in_time)
-        VALUES (%s, %s);
-    """,
-        (user.id, clock_in)
-    )
+        return clock_in
 
-    return clock_in
+    elif existing_record is not None:
+        # user has an existing clock-in record without a clock-out time, return an error message
+        return "Error: You cannot clock in again until you have clocked out."
+
 
 def save_user_time_by_email_clockout(email: str):
     # get the user object from the user's email
     user_dict = get_user_timezone_by_email(email)
-
-    print(user_dict)
+    user_id = user_dict['id']
 
     # convert the user dictionary to a UserResponseModel object
     user = UserTimeZoneResponseModel(**user_dict)
@@ -199,17 +201,21 @@ def save_user_time_by_email_clockout(email: str):
     # get the current time in the user's timezone
     clock_out = datetime.now(set_timezone)
 
-    print(clock_out)
+    # if there is no clock in time for the user, return an error message
+    if len(query_get("""
+        SELECT * FROM clock_times WHERE user_id = %s AND clock_out_time IS NULL;
+    """, (user_id))) == 0:
+        return "Error: You cannot clock out without first clocking in."
 
-    # create a new ClockTimesCreateModel instance with the user's email and clock-in time
-    clock_time = ClockTimesCreateModel(id=user.id, clock_out=clock_out)
-
-    # save the new clock-in time to the database
+    # update the clock-out time for the most recent clock-in record for the user
     query_put("""
-        INSERT INTO clock_times (user_id, clock_out_time)
-        VALUES (%s, %s);
+        UPDATE clock_times
+        SET clock_out_time = %s
+        WHERE user_id = %s AND clock_out_time IS NULL
+        ORDER BY clock_in_time DESC
+        LIMIT 1;
     """,
-        (user.id, clock_out)
+        (clock_out, user_id)
     )
 
     return clock_out

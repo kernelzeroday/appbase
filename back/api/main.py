@@ -4,7 +4,7 @@ from database.query import query_get, query_put, query_update
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout
+from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel,  TimesheetResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout, get_user_timesheet_by_email
 from datetime import datetime, timedelta
 
 app = FastAPI()
@@ -155,14 +155,28 @@ def clockout_api(credentials: HTTPAuthorizationCredentials = Security(security))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 # get user time data from database
-@app.get('/v1/timecard')
+@app.get('/v1/timecard', response_model=list[TimesheetResponseModel])
 def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(security)):
     """
     This timecard API allow you to fetch specific user data.
     """
     token = credentials.credentials
+
+    #decode user from token
+    user = auth_handler.decode_token(token)
+    
+    #print the user to the console
+
+    print("Logged in as: " + user)
+
+    user = get_user_timesheet_by_email(user)
+
+    #print the user to the console
+    print(user)
+
+    user = { 'clock_times': user }
+
     if (auth_handler.decode_token(token)):
-        user = get_user_by_id(user)
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
