@@ -4,6 +4,8 @@ import {
   SigninModel,
   Token,
   UserRegisterOrUpdateModel,
+  TimesheetModel, 
+  ClockTimesResponseModel,
 } from './model';
 
 class ApiService {
@@ -28,8 +30,8 @@ class ApiService {
   clockOut() {
     return http.post('/v1/clockout');
   }
-  getTimesheet() {
-    return http.get('/v1/timesheet');
+  getTimeCard() {
+    return http.get<TimesheetModel>('/v1/timecard');
   }
 
 
