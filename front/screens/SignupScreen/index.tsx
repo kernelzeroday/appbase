@@ -35,7 +35,6 @@ export const SignupScreen: React.FC<Props> = (props) => {
       password,
       first_name,
       last_name,
-      user_timezone,
     };
     ApiService.signup(values).then(() => {
       toast.show({
