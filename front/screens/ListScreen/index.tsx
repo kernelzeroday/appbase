@@ -25,6 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
 export const ListScreen: React.FC<Props> = () => {
   const [lists, setLists] = useState<UserModel[]>();
+  const [timesheet, setTimesheet] = useState<UserModel[]>();
   const onPressClockInButton = async () => {
     ApiService.clockIn().then((e) => {
       console.log(e);
@@ -35,6 +36,13 @@ export const ListScreen: React.FC<Props> = () => {
       console.log(e); 
     });
   };
+
+  const onPressTimesheetRefreshButton = async () => {
+    ApiService.getTimesheet().then((e) => {
+      console.log(e);
+      
+    });
+  }
 
 
   const onPressListItem = async (item: UserModel) => {
