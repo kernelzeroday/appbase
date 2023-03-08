@@ -191,9 +191,6 @@ export const ListScreen: React.FC<Props> = () => {
                 _pressed={{
                   bg: 'emerald.600',
                 }}
-                _text={{
-                  color: 'white',
-                }}
                 px={4}
                 py={2}
 
@@ -208,9 +205,6 @@ export const ListScreen: React.FC<Props> = () => {
                 rounded="md"
                 _pressed={{
                   bg: 'emerald.600',
-                }}
-                _text={{
-                  color: 'white',
                 }}
                 px={4}
                 py={2}
