@@ -55,6 +55,7 @@ def signin_api(user_details: SignInRequestModel):
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
 
+
 @app.get('/v1/refresh-token')
 def refresh_token_api(refresh_token: str):
     """
@@ -119,8 +120,6 @@ def clockin_api(credentials: HTTPAuthorizationCredentials = Security(security)):
 
     user = save_user_time_by_email_clockin(user)
 
-    #print the user to the console
-    print(user)
     #get the user id from the user object
     
     #print the user id to the console
