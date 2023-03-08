@@ -12,7 +12,6 @@ class SignUpRequestModel(BaseModel):
     password: str
     first_name: str
     last_name: str
-    user_timezone: str
 
 
 class UserUpdateRequestModel(BaseModel):
