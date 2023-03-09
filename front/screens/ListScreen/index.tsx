@@ -11,6 +11,8 @@ import {
   Heading,
   Spacer,
   Button,
+  HStack,
+  VStack,
 } from 'native-base';
 
 // navigation
@@ -48,22 +50,6 @@ export const ListScreen: React.FC<Props> = () => {
       setTimesheet(e.data);
     });
   };
-
-  function TimeCard(timesheet: { clock_times: any[] | null; }) {
-    //for each clock in and clock out, create a row
-    let array: JSX.Element[] = [];
-    //if timesheet.clock_times is null, return empty array
-    if (timesheet.clock_times == null) {
-      return <>{array}</>;
-    }
-    timesheet.clock_times.forEach((element) => {
-      //add the row to the list
-      array.push(<Text> {element.clock_in_time} </Text>);
-      array.push(<Text> {element.clock_out_time} </Text>);
-    });
-    //build array into a single element
-    return <>{array}</>;
-  }
 
   const onPressListItem = async (item: UserModel) => {
     // TODO: do something
@@ -295,9 +281,48 @@ export const ListScreen: React.FC<Props> = () => {
                           </Pressable>
 
                           {/* table for timesheet data from value timesheet */}
-                          <TimeCard timesheet={timesheet}>
-                            {' '}
-                          </TimeCard>
+                          <FlatList
+                            data={timesheet?.clock_times}
+                            renderItem={({ item }) => (
+                              <Box
+                                borderBottomWidth="1"
+                                _dark={{
+                                  borderColor: 'muted.50',
+                                }}
+                                borderColor="muted.800"
+                                pl={['0', '4']}
+                                pr={['0', '5']}
+                                py="2"
+                              >
+                                <HStack
+                                  space={[2, 3]}
+                                  justifyContent="space-between"
+                                >
+                                  <VStack>
+                                    <Text
+                                      _dark={{
+                                        color: 'warmGray.50',
+                                      }}
+                                      color="coolGray.800"
+                                      bold
+                                    >
+                                      Clock in time: {item.clock_in_time}
+                                    </Text>
+                                    <Text
+                                      _dark={{
+                                        color: 'warmGray.50',
+                                      }}
+                                      color="coolGray.800"
+                                      bold
+                                    >
+                                      Clock out time: {item.clock_out_time}
+                                    </Text>
+                                  </VStack>
+                                </HStack>
+                              </Box>
+                            )}
+                            keyExtractor={(item) => String(item.clock_in_time)}
+                          />
                         </Column>
                       </Row>
                     </Column>
