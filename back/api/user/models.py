@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List
+from datetime import datetime
 
 # this class is sign in request model
 class SignInRequestModel(BaseModel):
@@ -61,30 +62,30 @@ class TimesheetResponseModelAllUsers(BaseModel):
 
 # this class is for admin signup request model
 class AdminSignUpRequestModel(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
+    admin_email: EmailStr
+    admin_password: str
+    admin_first_name: str
+    admin_last_name: str
     admin_role: str
 
 # this class is for admin signin request model
 class AdminSignInRequestModel(BaseModel):
-    email: str
-    password: str
+    admin_email: str
+    admin_password: str
 
 # this class is for admin response model
 class AdminResponseModel(BaseModel):
     id: int
-    email: EmailStr
-    first_name: str
-    last_name: str
-    password: str
+    admin_email: EmailStr
+    admin_first_name: str
+    admin_last_name: str
+    admin_password: str
     admin_role: str
 
 # this class is for admin role response model
 class AdminRoleResponseModel(BaseModel):
     id: int
-    email: EmailStr
+    admin_email: EmailStr
     admin_role: str
 
 # this class is for admin time sheet response for all users in the database, this class will contain an array of clock objects for all users
@@ -94,10 +95,20 @@ class AdminTimesheetResponseModelAllUsers(BaseModel):
     user_time_zones: List[UserTimeZoneResponseModel] = []
     all_users: List[UserResponseModel] = []
 
-# this class is admin user data update request model
+
+# this class is for user sign up request model, used to create regular users not admin users.
+class AdminUserSignUpRequestModel(BaseModel):
+    user_email: EmailStr
+    user_password: str
+    user_first_name: str
+    user_last_name: str
+    user_timezone: str
+    user_role: str
+
+# this class is admin user data update request model, used to update regular users data not admin data.
 class AdminUserUpdateRequestModel(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
+    user_email: EmailStr
+    user_password: str
+    user_first_name: str
+    user_last_name: str
     user_timezone: str

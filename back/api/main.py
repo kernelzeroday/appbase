@@ -34,17 +34,6 @@ auth_handler = Auth()
 ########## Auth APIs ##########
 ###############################
 
-# user signup api and return access token
-@app.post('/v1/signup', response_model=UserAuthResponseModel)
-def signup_api(user_details: SignUpRequestModel):
-    """
-    This sign-up API allow you to register your account, and return access token.
-    """
-    user = register_user(user_details)
-    access_token = auth_handler.encode_token(user_details.email)
-    refresh_token = auth_handler.encode_refresh_token(user_details.email)
-    return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
-
 # user signin api and return access token
 @app.post('/v1/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
@@ -91,18 +80,6 @@ def get_user_api(user_id: int, credentials: HTTPAuthorizationCredentials = Secur
     token = credentials.credentials
     if (auth_handler.decode_token(token)):
         user = get_user_by_id(user_id)
-        return JSONResponse(status_code=200, content=jsonable_encoder(user))
-    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
-
-
-@app.post("/v1/user/update", response_model=UserResponseModel)
-def update_user_api(user_details: UserUpdateRequestModel, credentials: HTTPAuthorizationCredentials = Security(security)):
-    """
-    This user update API allow you to update user data.
-    """
-    token = credentials.credentials
-    if (auth_handler.decode_token(token)):
-        user = update_user(user_details)
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
@@ -238,6 +215,32 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
     if (auth_handler.decode_token(token)):
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+
+# create users to 'user' table AdminUserUpdateRequestModel for admin view only
+@app.post('/v1/admin/user/create', response_model=AdminUserUpdateRequestModel)
+def admin_user_create_api(admin_details: AdminUserUpdateRequestModel, credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This admin user create API allow you to create user.
+    """
+    token = credentials.credentials
+
+    #decode user from token
+    admin = auth_handler.decode_token(token)
+    
+    #print the user to the console
+
+    print("Logged in as: " + admin)
+
+    # get admin data from database
+    user = admin_create_user(admin_details.user_email, admin_details.user_password)
+
+    #print the user to the console
+    print(user)
+
+    user = { 'response': user }
+
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
 
 # change users password using email AdminUserUpdateRequestModel for admin view only
 @app.post('/v1/admin/user/update', response_model=AdminUserUpdateRequestModel)

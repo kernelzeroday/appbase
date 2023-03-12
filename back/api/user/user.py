@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from database.query import query_get, query_put, query_update
 from .auth import Auth
-from .models import UserUpdateRequestModel, SignInRequestModel, UserTimeZoneResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminTimesheetResponseModelAllUsers, AdminUserUpdateRequestModel, AdminUserResponseModel, AdminUserTimesheetResponseModel, AdminUserUpdateRequestModel
+from .models import *
 
 from datetime import timedelta, datetime
 
@@ -22,14 +22,14 @@ auth_handler = Auth()
 
 # sign in user using SignInRequestModel
 def sign_in_user(user_model: SignInRequestModel):
-    user = get_user_by_email(user_model.email)
+    user = get_user_by_email(user_model.user_email)
     if len(user) == 0:
         raise HTTPException(
             status_code=404, detail='Email user not found.')
-    if not auth_handler.verify_password(user_model.password, user[0]['password_hash']):
+    if not auth_handler.verify_password(user_model.user_password, user[0]['password_hash']):
         raise HTTPException(
             status_code=401, detail='Incorrect password.')
-    user = get_user_by_email(user_model.email)
+    user = get_user_by_email(user_model.user_email)
     return user[0]
 
 """
@@ -54,9 +54,9 @@ def get_all_users():
     user = query_get("""
         SELECT  
             user.id,
-            user.first_name,
-            user.last_name,
-            user.email
+            user.user_first_name,
+            user.user_last_name,
+            user.user_email
         FROM user
         """, ())
     return user
@@ -66,10 +66,10 @@ def get_user_by_email(email: str):
     user = query_get("""
         SELECT 
             user.id,
-            user.first_name,
-            user.last_name,
-            user.email,
-            user.password_hash,
+            user.user_first_name,
+            user.user_last_name,
+            user.user_email,
+            user.user_password_hash,
             user.user_timezone
         FROM user 
         WHERE email = %s
@@ -81,9 +81,9 @@ def get_user_by_id(id: int):
     user = query_get("""
         SELECT 
             user.id,
-            user.first_name,
-            user.last_name,
-            user.email,
+            user.user_first_name,
+            user.user_last_name,
+            user.user_email,
         FROM user 
         WHERE id = %s
         """, (id))
@@ -176,7 +176,7 @@ def get_all_users_time_records():
             clock_times.user_id,
             clock_times.clock_in_time,
             clock_times.clock_out_time,
-            user.email,
+            user.user_email,
             user.user_timezone
         FROM clock_times
         INNER JOIN user ON clock_times.user_id = user.id
@@ -203,7 +203,7 @@ def get_all_users_time_records():
         results.append({
             'id': item['id'],
             'user_id': item['user_id'],
-            'email': item['email'],
+            'user_email': item['user_email'],
             'clock_in_time': clock_in,
             'clock_out_time': clock_out,
             'total_hours': round((item['clock_out_time'] - item['clock_in_time']).total_seconds() / 3600.0, 2),
@@ -222,7 +222,7 @@ def get_user_timezone_by_email(email: str):
     user = query_get("""
         SELECT 
             user.id,
-            user.email,
+            user.user_email,
             user.user_timezone
         FROM user 
         WHERE email = %s
@@ -307,7 +307,7 @@ def save_user_time_by_email_clockout(email: str):
 
 # admin function to return admin role
 def admin_get_role(admin: str):
-    admin = get_admin_by_email(admin.email)
+    admin = get_admin_by_email(admin.admin_email)
     return admin[0]['admin_role']
 
 
@@ -316,12 +316,12 @@ def get_admin_by_email(email: str):
     admin = query_get("""
         SELECT 
             admin.id,
-            admin.email,
-            admin.password
-            admin.timezone,
+            admin.admin_email,
+            admin.admin_password
+            admin.admin_timezone,
             admin.admin_role
         FROM admin 
-        WHERE email = %s
+        WHERE admin_email = %s
         """, (email))
     return admin[0]
 
@@ -338,12 +338,12 @@ def admin_signup(admin: AdminSignUpRequestModel):
 
     # save the new admin email, first name,  last name,  password , role to the database
     query_put("""
-        INSERT INTO admin (email, password, admin_role)
+        INSERT INTO admin (admin_email, admin_password, admin_role)
         VALUES (%s, %s, %s);
     """,
-        (admin.email, hashed_password, admin.admin_role)
+        (admin.admin_email, hashed_password, admin.admin_role)
     )
-    admin = get_admin_by_email(admin.email)
+    admin = get_admin_by_email(admin.admin_email)
 
     return admin
 
@@ -351,40 +351,40 @@ def admin_signup(admin: AdminSignUpRequestModel):
 # admin function to login admin user using AdminSignInRequestModel, if admin has not been created, return an error message
 def admin_login(admin: AdminSignInRequestModel):
 
-    admin = get_admin_by_email(admin.email)
+    admin = get_admin_by_email(admin.admin_email)
     if len(admin) == 0:
         raise HTTPException(
             status_code=404, detail='Admin user not found.')
     if not auth_handler.verify_password(admin.password, admin[0]['password_hash']):
         raise HTTPException(
             status_code=401, detail='Incorrect password.')
-    admin = get_admin_by_email(admin.email)
+    admin = get_admin_by_email(admin.admin_email)
     return admin[0]
 
 
-# admin function to create / add users using UserUpdateRequestModel only if the admin has admin role
-def admin_create_user(admin: str, user: AdminUserUpdateRequestModel):
-    admin = admin_get_role(admin.email)
+# admin function to create / add non admin users using AdminUserSignUpRequestModel only if the admin has admin role
+def admin_create_user(admin: str, user: AdminUserSignUpRequestModel):
+    admin = admin_get_role(admin.admin_email)
     # if admin is not an admin, return an error message
-    if admin[0]['admin_role'] != 'admin':
+    if admin != 'admin':
         return "Error: You do not have permission to view this page."
 
     # hash the password using AuthHandler
-    hashed_password = auth_handler.get_password_hash(user.password)
+    hashed_password = auth_handler.get_password_hash(user.user_password)
 
     # save the new user email, first name,  last name,  password , role , timezone to the database
     query_put("""
-        INSERT INTO user (email, first_name, last_name, password, user_role, user_timezone)
+        INSERT INTO user (user_email, user_first_name, user_last_name, user_password, user_role, user_timezone)
         VALUES (%s, %s, %s, %s, %s, %s);
     """,
-        (user.email, user.first_name, user.last_name, hashed_password, user.user_role, user.user_timezone)
+        (user.user_email, user.user_first_name, user.user_last_name, hashed_password, user.user_role, user.user_timezone)
     )
-    user = get_user_by_email(user.email)
+    user = get_user_by_email(user.user_email)
     return user[0]
 
 # admin function to delete users using UserUpdateRequestModel only if the admin has admin role
 def admin_delete_user(admin: str, user: AdminUserUpdateRequestModel):
-    admin = admin_get_role(admin.email)
+    admin = admin_get_role(admin.admin_email)
     # if admin is not an admin, return an error message
     if admin[0]['admin_role'] != 'admin':
         return "Error: You do not have permission to view this page."
@@ -392,31 +392,31 @@ def admin_delete_user(admin: str, user: AdminUserUpdateRequestModel):
     # delete the user from the database
     query_put("""
         DELETE FROM user
-        WHERE email = %s;
+        WHERE user_email = %s;
     """,
-        (user.email)
+        (user.user_email)
     )
     return "User deleted."
 
 # admin function to update users password using UserUpdateRequestModel only if the admin has admin role
 def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
-    admin = admin_get_role(admin.email)
+    admin = admin_get_role(admin.admin_email)
     # if admin is not an admin, return an error message
     if admin != 'admin':
         return "Error: You do not have permission to view this page."
 
     # hash the password using AuthHandler
-    hashed_password = auth_handler.get_password_hash(user.password)
+    hashed_password = auth_handler.get_password_hash(user.user_password)
 
     # update the user's password in the database
     query_put("""
         UPDATE user
         SET password = %s
-        WHERE email = %s;
+        WHERE user_email = %s;
     """,
-        (hashed_password, user.email)
+        (hashed_password, user.user_email)
     )
-    user = get_user_by_email(user.email)
+    user = get_user_by_email(user.user_email)
     return user[0]
 
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers
@@ -434,9 +434,9 @@ def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dic
     data = query_get(f"""
         SELECT 
             clock_times.user_id,
-            user.first_name,
-            user.last_name,
-            user.email,
+            user.user_first_name,
+            user.user_last_name,
+            user.user_email,
             DATE(clock_times.clock_in_time) AS date,
             TIME(clock_times.clock_in_time) AS clock_in_time,
             TIME(clock_times.clock_out_time) AS clock_out_time
@@ -449,9 +449,9 @@ def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dic
     results = []
     for item in data:
         user_id = item['user_id']
-        first_name = item['first_name']
-        last_name = item['last_name']
-        email = item['email']
+        first_name = item['user_first_name']
+        last_name = item['user_last_name']
+        email = item['user_email']
         date = item['date']
         clock_in_time = item['clock_in_time']
         clock_out_time = item['clock_out_time']
@@ -461,9 +461,9 @@ def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dic
         if result is None:
             result = {
                 'user_id': user_id,
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email,
+                'user_first_name': first_name,
+                'user_last_name': last_name,
+                'user_email': email,
                 'date': date,
                 'clock_in_times': [],
                 'clock_out_times': [],
