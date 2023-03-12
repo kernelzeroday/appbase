@@ -239,6 +239,33 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
+# change users password using email AdminUserUpdateRequestModel for admin view only
+@app.post('/v1/admin/user/update', response_model=AdminUserUpdateRequestModel)
+def admin_user_update_api(admin_details: AdminUserUpdateRequestModel, credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This admin user update API allow you to update user password.
+    """
+    token = credentials.credentials
+
+    #decode user from token
+    admin = auth_handler.decode_token(token)
+    
+    #print the user to the console
+
+    print("Logged in as: " + admin)
+
+    # get admin data from database
+    user = admin_update_user_password(admin_details.email, admin_details.password)
+
+    #print the user to the console
+    print(user)
+
+    user = { 'response': user }
+
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+
 
 ###############################
 ########## Test APIs ##########
