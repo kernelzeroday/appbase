@@ -4,7 +4,8 @@ from database.query import query_get, query_put, query_update
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel,  TimesheetResponseModel, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout, get_user_timesheet_by_email
+#from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel,  TimesheetResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminRoleResponseModel, AdminTimesheetResponseModelAllUsers, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout, get_user_timesheet_by_email
+from user import *
 from datetime import datetime, timedelta
 
 app = FastAPI()
@@ -33,6 +34,7 @@ auth_handler = Auth()
 ########## Auth APIs ##########
 ###############################
 
+# user signup api and return access token
 @app.post('/v1/signup', response_model=UserAuthResponseModel)
 def signup_api(user_details: SignUpRequestModel):
     """
@@ -43,13 +45,13 @@ def signup_api(user_details: SignUpRequestModel):
     refresh_token = auth_handler.encode_refresh_token(user_details.email)
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
-# test
+# user signin api and return access token
 @app.post('/v1/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
     """
     This sign-in API allow you to obtain your access token.
     """
-    user = signin_user(user_details.email, user_details.password)
+    user = sign_in_user(user_details.email, user_details.password)
     access_token = auth_handler.encode_token(user['email'])
     refresh_token = auth_handler.encode_refresh_token(user['email'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
@@ -181,6 +183,61 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 
+
+
+################################
+########## Admin APIs ##########
+################################
+
+# admin sign up API AdminSignUpRequestModel and return access token
+@app.post('/v1/admin/signup', response_model=AdminSignUpRequestModel)
+def admin_signup_api(admin_details: AdminSignUpRequestModel):
+    """
+    This admin sign-up API allow you to register your account, and return access token.
+    """
+    admin = (admin_details.email, admin_details.password)
+    access_token = auth_handler.encode_token(admin['email'])
+    refresh_token = auth_handler.encode_refresh_token(admin['email'])
+    return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
+
+
+# admin sign in API AdminSignInRequestModel and return access token
+@app.post('/v1/admin/signin', response_model=AdminSignInRequestModel)
+def admin_signin_api(admin_details: AdminSignInRequestModel):
+    """
+    This admin sign-in API allow you to obtain your access token.
+    """
+    admin = admin_login(admin_details.email, admin_details.password)
+    access_token = auth_handler.encode_token(admin['email'])
+    refresh_token = auth_handler.encode_refresh_token(admin['email'])
+    return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
+
+# get users time data from database for admin view only AdminTimesheetResponseModelAllUsers
+@app.get('/v1/admin/timecard', response_model=list[AdminTimesheetResponseModelAllUsers])
+def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This timecard API allow you to fetch specific user data.
+    """
+    token = credentials.credentials
+
+    #decode user from token
+    admin = auth_handler.decode_token(token)
+    
+    #print the user to the console
+
+    print("Logged in as: " + admin)
+
+    # get admin data from database
+    user = admin_get_all_users_timesheet(admin.email)
+
+    #print the user to the console
+    print(user)
+
+    user = { 'response': user }
+
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 
 ###############################
