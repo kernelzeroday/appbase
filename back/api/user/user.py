@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from database.query import query_get, query_put, query_update
 from .auth import Auth
-from .models import UserUpdateRequestModel, SignInRequestModel, UserTimeZoneResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminTimesheetResponseModelAllUsers
+from .models import UserUpdateRequestModel, SignInRequestModel, UserTimeZoneResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminTimesheetResponseModelAllUsers, AdminUserUpdateRequestModel, AdminUserResponseModel, AdminUserTimesheetResponseModel, AdminUserUpdateRequestModel
 
 from datetime import timedelta, datetime
 
@@ -19,33 +19,6 @@ auth_handler = Auth()
 ############################################# USER ################################################
 ###################################################################################################
 
-# register user using UserUpdateRequestModel
-def register_user(user_model: UserUpdateRequestModel):
-    user = get_user_by_email(user_model.email)
-    if len(user) != 0:
-        raise HTTPException(
-            status_code=409, detail='Email user already exists.')
-    hashed_password = auth_handler.encode_password(user_model.password)
-
-    query_put("""
-                INSERT INTO user (
-                    first_name,
-                    last_name,
-                    email,
-                    password_hash,
-                    user_timezone
-                ) VALUES (%s,%s,%s,%s,%s)
-                """,
-            (
-                user_model.first_name,
-                user_model.last_name,
-                user_model.email,
-                hashed_password,
-                user_model.user_timezone,
-            )
-            )
-    user = get_user_by_email(user_model.email)
-    return user[0]
 
 # sign in user using SignInRequestModel
 def sign_in_user(user_model: SignInRequestModel):
@@ -70,29 +43,6 @@ def signin_user(email, password):
         raise HTTPException(status_code=401, detail='Invalid password')
     return user_dict[0]
 """
-# update user using UserUpdateRequestModel
-def update_user(user_model: UserUpdateRequestModel):
-    hashed_password = auth_handler.encode_password(user_model.password)
-    query_put("""
-            UPDATE user 
-                SET first_name = %s,
-                    last_name = %s,
-                    email = %s,
-                    password_hash = %s,
-                    user_timezone = %s,
-                WHERE user.email = %s;
-            """,
-              (
-                  user_model.first_name,
-                  user_model.last_name,
-                  user_model.email,
-                  hashed_password,
-                  user_model.user_timezone,
-                  user_model.email,
-              )
-              )
-    user = get_user_by_email(user_model.email)
-    return user[0]
 
 
 ####################################################################################################
@@ -355,6 +305,12 @@ def save_user_time_by_email_clockout(email: str):
 ############################################## ADMIN ##############################################
 ###################################################################################################
 
+# admin function to return admin role
+def admin_get_role(admin: str):
+    admin = get_admin_by_email(admin.email)
+    return admin[0]['admin_role']
+
+
 # get admin data by email using AdminResponseModel and return only the admin data
 def get_admin_by_email(email: str):
     admin = query_get("""
@@ -405,10 +361,63 @@ def admin_login(admin: AdminSignInRequestModel):
     admin = get_admin_by_email(admin.email)
     return admin[0]
 
-# admin function to return admin role
-def admin_get_role(admin: str):
-    admin = get_admin_by_email(admin.email)
-    return admin[0]['admin_role']
+
+# admin function to create / add users using UserUpdateRequestModel only if the admin has admin role
+def admin_create_user(admin: str, user: AdminUserUpdateRequestModel):
+    admin = admin_get_role(admin.email)
+    # if admin is not an admin, return an error message
+    if admin[0]['admin_role'] != 'admin':
+        return "Error: You do not have permission to view this page."
+
+    # hash the password using AuthHandler
+    hashed_password = auth_handler.get_password_hash(user.password)
+
+    # save the new user email, first name,  last name,  password , role , timezone to the database
+    query_put("""
+        INSERT INTO user (email, first_name, last_name, password, user_role, user_timezone)
+        VALUES (%s, %s, %s, %s, %s, %s);
+    """,
+        (user.email, user.first_name, user.last_name, hashed_password, user.user_role, user.user_timezone)
+    )
+    user = get_user_by_email(user.email)
+    return user[0]
+
+# admin function to delete users using UserUpdateRequestModel only if the admin has admin role
+def admin_delete_user(admin: str, user: AdminUserUpdateRequestModel):
+    admin = admin_get_role(admin.email)
+    # if admin is not an admin, return an error message
+    if admin[0]['admin_role'] != 'admin':
+        return "Error: You do not have permission to view this page."
+
+    # delete the user from the database
+    query_put("""
+        DELETE FROM user
+        WHERE email = %s;
+    """,
+        (user.email)
+    )
+    return "User deleted."
+
+# admin function to update users password using UserUpdateRequestModel only if the admin has admin role
+def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
+    admin = admin_get_role(admin.email)
+    # if admin is not an admin, return an error message
+    if admin != 'admin':
+        return "Error: You do not have permission to view this page."
+
+    # hash the password using AuthHandler
+    hashed_password = auth_handler.get_password_hash(user.password)
+
+    # update the user's password in the database
+    query_put("""
+        UPDATE user
+        SET password = %s
+        WHERE email = %s;
+    """,
+        (hashed_password, user.email)
+    )
+    user = get_user_by_email(user.email)
+    return user[0]
 
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers
 def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dict]:

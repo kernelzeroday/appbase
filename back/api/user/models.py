@@ -6,20 +6,6 @@ class SignInRequestModel(BaseModel):
     email: str
     password: str
 
-# this class is sign up / register request model
-class SignUpRequestModel(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
-
-# this class is user data update request model
-class UserUpdateRequestModel(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
-    user_timezone: str
 
 # this class is user data response model
 class UserResponseModel(BaseModel):
@@ -99,9 +85,6 @@ class AdminResponseModel(BaseModel):
 class AdminRoleResponseModel(BaseModel):
     id: int
     email: EmailStr
-    first_name: str
-    last_name: str
-    password: str
     admin_role: str
 
 # this class is for admin time sheet response for all users in the database, this class will contain an array of clock objects for all users
@@ -110,3 +93,11 @@ class AdminTimesheetResponseModelAllUsers(BaseModel):
     users: List[UserResponseModel] = []
     user_time_zones: List[UserTimeZoneResponseModel] = []
     all_users: List[UserResponseModel] = []
+
+# this class is admin user data update request model
+class AdminUserUpdateRequestModel(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    user_timezone: str
