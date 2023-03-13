@@ -15,14 +15,14 @@ import {
 import { RootStackParamList } from '../../navigation/types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { ApiService, UserModel } from '../../lib/axios';
+import { ApiService, UserResponseModel } from '../../lib/axios';
 import Feather from '@expo/vector-icons/build/Feather';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
 export const ListScreen: React.FC<Props> = () => {
-  const [lists, setLists] = useState<UserModel[]>();
-  const onPressListItem = async (item: UserModel) => {
+  const [lists, setLists] = useState<UserResponseModel[]>();
+  const onPressListItem = async (item: UserResponseModel) => {
     // TODO: do something
     // props.navigation.navigate('Detail', {
     //   screen: 'Profile',
