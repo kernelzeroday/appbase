@@ -21,15 +21,34 @@ auth_handler = Auth()
 
 # register user using UserSignUpRequestModel
 def register_user(user_model: UserSignUpRequestModel):
-    user = get_user_by_email(user_model.email)
-    if len(user) > 0:
+    user = get_user_by_email(user_model.user_email)
+    if len(user) != 0:
         raise HTTPException(
-            status_code=409, detail='Email already registered.')
-    user = query_put("""
-        INSERT INTO user (user_first_name, user_last_name, user_email, user_password_hash, user_timezone, user_role)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        RETURNING id, user_first_name, user_last_name, user_email, user_password_hash, user_timezone, user_role
-        """, (user_model.first_name, user_model.last_name, user_model.email, auth_handler.get_password_hash(user_model.password), user_model.user_timezone, user_model.user_role))
+            status_code=409, detail='Email user already exists.')
+    hashed_password = auth_handler.encode_password(user_model.user_password)
+
+    default_timezone = 'America/Los_Angeles'
+
+    query_put("""
+                INSERT INTO user (
+                    user_first_name,
+                    user_last_name,
+                    user_email,
+                    user_password_hash,
+                    user_timezone,
+                    user_role
+                ) VALUES (%s,%s,%s,%s,%s,%s)
+                """,
+            (
+                user_model.user_first_name,
+                user_model.user_last_name,
+                user_model.user_email,
+                hashed_password,
+                default_timezone,
+                user_model.user_role
+            )
+            )
+    user = get_user_by_email(user_model.user_email)
     return user[0]
 
 # sign in user using SignInRequestModel
@@ -38,7 +57,7 @@ def sign_in_user(user_model: SignInRequestModel):
     if len(user) == 0:
         raise HTTPException(
             status_code=404, detail='Email user not found.')
-    if not auth_handler.verify_password(user_model.user_password, user[0]['password_hash']):
+    if not auth_handler.verify_password(user_model.user_password, user[0]['user_password_hash']):
         raise HTTPException(
             status_code=401, detail='Incorrect password.')
     user = get_user_by_email(user_model.user_email)
@@ -84,7 +103,7 @@ def get_user_by_email(email: str):
             user.user_password_hash,
             user.user_timezone
         FROM user 
-        WHERE email = %s
+        WHERE user_email = %s
         """, (email))
     return user
 
@@ -114,7 +133,7 @@ def get_user_timesheet_by_email(email: str) -> List[Dict]:
             clock_times.clock_out_time
         FROM user
         LEFT JOIN clock_times ON user.id = clock_times.user_id 
-        WHERE email = %s
+        WHERE user_email = %s
         """, (email,))
     
     data = []
@@ -237,7 +256,7 @@ def get_user_timezone_by_email(email: str):
             user.user_email,
             user.user_timezone
         FROM user 
-        WHERE email = %s
+        WHERE user_email = %s
         """, (email))
     return user[0]
 

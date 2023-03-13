@@ -7,7 +7,7 @@ CREATE TABLE `admin` (
   `admin_timezone` varchar(256) NOT NULL,
   `admin_role` varchar(256) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `admin_email` (`admin_email`)
 );
 
 
@@ -20,7 +20,7 @@ CREATE TABLE `user` (
   `user_timezone` varchar(256) NOT NULL,
   `user_role` varchar(256) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `user_email` (`user_email`)
 );
 
 CREATE TABLE `clock_times` (
