@@ -27,8 +27,6 @@ def register_user(user_model: UserSignUpRequestModel):
             status_code=409, detail='Email user already exists.')
     hashed_password = auth_handler.encode_password(user_model.user_password)
 
-    default_timezone = 'America/Los_Angeles'
-
     query_put("""
                 INSERT INTO user (
                     user_first_name,
@@ -44,7 +42,7 @@ def register_user(user_model: UserSignUpRequestModel):
                 user_model.user_last_name,
                 user_model.user_email,
                 hashed_password,
-                default_timezone,
+                user_model.user_timezone,
                 user_model.user_role
             )
             )
