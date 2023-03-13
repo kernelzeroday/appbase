@@ -29,7 +29,7 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<UserResponseModel>) {
       state.user = action.payload;
     },
-    setTokenModel(state, action: PayloadAction<TokenModel>) {
+    setToken(state, action: PayloadAction<TokenModel>) {
       state.TokenModel = action.payload;
     },
     setLoginEmail(state, action: PayloadAction<LoginInfo>) {
@@ -38,6 +38,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { reset, resetAuthData, setUser, setTokenModel, setLoginEmail } =
+export const { reset, resetAuthData, setUser, setToken, setLoginEmail } =
   authSlice.actions;
 export default authSlice.reducer;
