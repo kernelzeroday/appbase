@@ -1,22 +1,23 @@
 import http from './http';
-import {
-  UserModel,
-  SigninModel,
-  Token,
-  UserRegisterOrUpdateModel,
-} from './model';
+//import {
+  //UserModel,
+  //SigninModel,
+  //Token,
+  //UserRegisterOrUpdateModel,
+//} from './model';
+
 import { UserUpdateRequestModel, TokenModel, SignInRequestModel, UserResponseModel } from './apimodels';
 
 class ApiService {
-  signup(data: UserRegisterOrUpdateModel) {
+  signup(data: UserUpdateRequestModel) {
     return http.post<UserResponseModel>('/v1/signup', data);
   }
 
-  signin(data: SigninModel) {
-    return http.post<{ user: UserResponseModel; token: Token }>('/v1/signin', data);
+  signin(data: SignInRequestModel) {
+    return http.post<{ user: UserResponseModel; tokenModel: TokenModel }>('/v1/signin', data);
   }
 
-  updateUser(data: UserRegisterOrUpdateModel) {
+  updateUser(data: UserUpdateRequestModel) {
     return http.post<UserResponseModel>('/v1/user/update', data);
   }
 
