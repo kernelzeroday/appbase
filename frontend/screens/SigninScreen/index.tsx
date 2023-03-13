@@ -3,9 +3,6 @@ import * as React from 'react';
 // api
 import { apiClient, ApiService } from '../../lib/axios';
 
-//import apimodels
-import { UserResponseModel } from '../../lib/axios/apimodels';
-
 //components
 import {
   Box,
