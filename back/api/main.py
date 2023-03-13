@@ -45,7 +45,7 @@ def signup_api(user_details: UserSignUpRequestModel):
     refresh_token = auth_handler.encode_refresh_token(user['user_email'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
-
+ 
 # user signin api and return access token
 @app.post('/v1/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
@@ -184,9 +184,9 @@ def admin_signup_api(admin_details: AdminSignUpRequestModel):
     """
     This admin sign-up API allow you to register your account, and return access token.
     """
-    admin = (admin_details.email, admin_details.password)
-    access_token = auth_handler.encode_token(admin['email'])
-    refresh_token = auth_handler.encode_refresh_token(admin['email'])
+    admin = admin_signup(admin_details)
+    access_token = auth_handler.encode_token(admin['admin_email'])
+    refresh_token = auth_handler.encode_refresh_token(admin['admin_email'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
 
 
@@ -196,9 +196,9 @@ def admin_signin_api(admin_details: AdminSignInRequestModel):
     """
     This admin sign-in API allow you to obtain your access token.
     """
-    admin = admin_login(admin_details.email, admin_details.password)
-    access_token = auth_handler.encode_token(admin['email'])
-    refresh_token = auth_handler.encode_refresh_token(admin['email'])
+    admin = admin_login(admin_details)
+    access_token = auth_handler.encode_token(admin['admin_email'])
+    refresh_token = auth_handler.encode_refresh_token(admin['admin_email'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
 
 # get users time data from database for admin view only AdminTimesheetResponseModelAllUsers
@@ -217,7 +217,7 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
     print("Logged in as: " + admin)
 
     # get admin data from database
-    user = admin_get_all_users_timesheet(admin.email)
+    user = admin_get_all_users_timesheet(admin)
 
     #print the user to the console
     print(user)

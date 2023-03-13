@@ -75,7 +75,9 @@ class AdminSignUpRequestModel(BaseModel):
     admin_password: str
     admin_first_name: str
     admin_last_name: str
+    admin_timezone: str
     admin_role: str
+
 
 # this class is for admin signin request model
 class AdminSignInRequestModel(BaseModel):
@@ -90,6 +92,7 @@ class AdminResponseModel(BaseModel):
     admin_last_name: str
     admin_password: str
     admin_role: str
+    admin_timezone: str
 
 # this class is for admin role response model
 class AdminRoleResponseModel(BaseModel):
