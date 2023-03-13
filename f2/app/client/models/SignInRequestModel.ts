@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type SignInRequestModel = {
-    email: string;
-    password: string;
+    user_email: string;
+    user_password: string;
 };
 

@@ -1,7 +1,7 @@
 version: '3'
 services:
-  mysql:
-    container_name: mysql
+  crm2-mysql:
+    container_name: crm2-mysql
     build: ./mysql/
     ports:
       - "3306:3306"
@@ -11,9 +11,9 @@ services:
       - MYSQL_ROOT_PASSWORD=archmage
       - MYSQL_DATABASE=fastapi_app
     tty: true
-  api:
+  crm2-api:
     depends_on:
-      - mysql
+      - crm2-mysql
     container_name: fast_api
     build: ./api
     restart: always
@@ -27,4 +27,4 @@ services:
       - DATABASE_USERNAME=root
       - DATABASE_PASSWORD=archmage
       - DATABASE=fastapi_app
-      - DATABASE_HOST=mysql
+      - DATABASE_HOST=crm2-mysql
