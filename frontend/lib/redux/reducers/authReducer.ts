@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-//import { Token, UserModel } from '../../axios/model';
-import { TokenModel, UserResponseModel } from '../../axios/apimodels';
-
+import { Token, UserModel } from '../../axios/model';
 
 interface LoginInfo {
   email: string;
@@ -9,8 +7,8 @@ interface LoginInfo {
 }
 
 const initialState = {
-  user: undefined as undefined | UserResponseModel,
-  TokenModel: undefined as undefined | TokenModel,
+  user: undefined as undefined | UserModel,
+  token: undefined as undefined | Token,
   loginInfo: {
     email: '',
     password: '',
@@ -24,13 +22,13 @@ const authSlice = createSlice({
     reset: () => initialState,
     resetAuthData: (state) => {
       state.user = undefined;
-      state.TokenModel = undefined;
+      state.token = undefined;
     },
-    setUser(state, action: PayloadAction<UserResponseModel>) {
+    setUser(state, action: PayloadAction<UserModel>) {
       state.user = action.payload;
     },
-    setTokenModel(state, action: PayloadAction<TokenModel>) {
-      state.TokenModel = action.payload;
+    setToken(state, action: PayloadAction<Token>) {
+      state.token = action.payload;
     },
     setLoginEmail(state, action: PayloadAction<LoginInfo>) {
       state.loginInfo = action.payload;
@@ -38,6 +36,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { reset, resetAuthData, setUser, setTokenModel, setLoginEmail } =
+export const { reset, resetAuthData, setUser, setToken, setLoginEmail } =
   authSlice.actions;
 export default authSlice.reducer;
