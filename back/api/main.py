@@ -34,6 +34,18 @@ auth_handler = Auth()
 ########## Auth APIs ##########
 ###############################
 
+# user signup api and return access token
+@app.post('/v1/signup', response_model=UserAuthResponseModel)
+def signup_api(user_details: UserSignUpRequestModel):
+    """
+    This sign-up API allow you to obtain your access token.
+    """
+    user = register_user(user_details.email, user_details.password)
+    access_token = auth_handler.encode_token(user['email'])
+    refresh_token = auth_handler.encode_refresh_token(user['email'])
+    return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
+
+
 # user signin api and return access token
 @app.post('/v1/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
