@@ -14,7 +14,7 @@ class ApiService {
   }
 
   signin(data: SignInRequestModel) {
-    return http.post<{ user: UserResponseModel; token: TokenModel }>('/v1/signin', data);
+    return http.post<{ user: UserResponseModel; tokenModel: TokenModel }>('/v1/signin', data);
   }
 
   updateUser(data: UserUpdateRequestModel) {
