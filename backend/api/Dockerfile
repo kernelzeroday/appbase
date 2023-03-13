@@ -1,4 +1,5 @@
-FROM python:3.10
+#was 3.10 before refactor
+FROM python:3.11
 
 WORKDIR /app
 
