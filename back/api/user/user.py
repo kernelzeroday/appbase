@@ -336,7 +336,7 @@ def save_user_time_by_email_clockout(email: str):
 
 # admin function to return admin role
 def admin_get_role(admin: str):
-    admin = get_admin_by_email(admin.admin_email)
+    admin = get_admin_by_email(admin)
     return admin[0]['admin_role']
 
 
@@ -346,48 +346,63 @@ def get_admin_by_email(email: str):
         SELECT 
             admin.id,
             admin.admin_email,
-            admin.admin_password
+            admin.admin_password_hash,
             admin.admin_timezone,
             admin.admin_role
         FROM admin 
         WHERE admin_email = %s
         """, (email))
-    return admin[0]
+    return admin
 
 # admin function to signup admin user using AdminSignUpRequestModel, if admin has already been created, return an error message
-def admin_signup(admin: AdminSignUpRequestModel):
+def admin_signup(admin_model: AdminSignUpRequestModel):
     # check if admin has already been created
-    if len(query_get("""
-        SELECT * FROM admin;
-    """)) > 0:
-        return "Error: Admin has already been created."
+    admin = get_admin_by_email(admin_model.admin_email)
+
+    if len(admin) != 0:
+        raise HTTPException(
+            status_code=409, detail='Admin user already exists.')
 
     # hash the password using AuthHandler
-    hashed_password = auth_handler.get_password_hash(admin.password)
+    hashed_password = auth_handler.encode_password(admin_model.admin_password)
 
     # save the new admin email, first name,  last name,  password , role to the database
     query_put("""
-        INSERT INTO admin (admin_email, admin_password, admin_role)
-        VALUES (%s, %s, %s);
+        INSERT INTO admin (
+            admin_email,
+            admin_password_hash,
+            admin_first_name,
+            admin_last_name,
+            admin_timezone,
+            admin_role
+            ) VALUES (%s, %s, %s, %s, %s, %s);
     """,
-        (admin.admin_email, hashed_password, admin.admin_role)
+        (
+        admin_model.admin_email,
+        hashed_password,
+        admin_model.admin_first_name,
+        admin_model.admin_last_name,
+        admin_model.admin_timezone,
+        admin_model.admin_role
+        )
     )
-    admin = get_admin_by_email(admin.admin_email)
+    admin = get_admin_by_email(admin_model.admin_email)
 
-    return admin
+    return admin[0]
+
 
 
 # admin function to login admin user using AdminSignInRequestModel, if admin has not been created, return an error message
-def admin_login(admin: AdminSignInRequestModel):
+def admin_login(admin_model: AdminSignInRequestModel):
 
-    admin = get_admin_by_email(admin.admin_email)
+    admin = get_admin_by_email(admin_model.admin_email)
     if len(admin) == 0:
         raise HTTPException(
             status_code=404, detail='Admin user not found.')
-    if not auth_handler.verify_password(admin.password, admin[0]['password_hash']):
+    if not auth_handler.verify_password(admin_model.admin_password, admin[0]['admin_password_hash']):
         raise HTTPException(
             status_code=401, detail='Incorrect password.')
-    admin = get_admin_by_email(admin.admin_email)
+    admin = get_admin_by_email(admin_model.admin_email)
     return admin[0]
 
 
@@ -449,9 +464,11 @@ def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
     return user[0]
 
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers
-def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dict]:
+def admin_get_all_users_timesheet(admin: str) -> List[dict]:
 
     admin = admin_get_role(admin)
+
+    print(admin)
     # if admin is not an admin, return an error message
     if admin != 'admin':
         return "Error: You do not have permission to view this page."
@@ -460,7 +477,7 @@ def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dic
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=6)
 
-    data = query_get(f"""
+    data = query_get("""
         SELECT 
             clock_times.user_id,
             user.user_first_name,
@@ -471,9 +488,9 @@ def admin_get_all_users_timesheet(admin: str, user_data: List[dict]) -> List[dic
             TIME(clock_times.clock_out_time) AS clock_out_time
         FROM clock_times
         JOIN user ON clock_times.user_id = user.id
-        WHERE clock_times.clock_in_time BETWEEN '{start_of_week}' AND '{end_of_week}'
+        WHERE clock_times.clock_in_time BETWEEN %s AND %s
         ORDER BY clock_times.user_id, DATE(clock_times.clock_in_time), clock_times.clock_in_time, clock_times.clock_out_time;
-    """)
+    """, (start_of_week, end_of_week))
 
     results = []
     for item in data:
