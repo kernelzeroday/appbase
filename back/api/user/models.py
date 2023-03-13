@@ -2,26 +2,35 @@ from pydantic import BaseModel, EmailStr
 from typing import List
 from datetime import datetime
 
+# this class is signup request model
+class UserSignUpRequestModel(BaseModel):
+    user_email: EmailStr
+    user_password: str
+    user_first_name: str
+    user_last_name: str
+    user_timezone: str
+    user_role: str
+
 # this class is sign in request model
 class SignInRequestModel(BaseModel):
-    email: str
-    password: str
+    user_email: str
+    user_password: str
 
 
 # this class is user data response model
 class UserResponseModel(BaseModel):
     id: int
-    email: EmailStr
-    first_name: str
-    last_name: str
-    password: str
+    user_email: EmailStr
+    user_first_name: str
+    user_last_name: str
+    user_password: str
     user_timezone: str
     user_role: str
 
 # this class is user timezone response model
 class UserTimeZoneResponseModel(BaseModel):
     id: int
-    email: EmailStr
+    user_email: EmailStr
     user_timezone: str
 
 # this class is the clocktime create model, this class contains id, clock_in_time, and clock_out_time

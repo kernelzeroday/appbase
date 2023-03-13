@@ -19,6 +19,18 @@ auth_handler = Auth()
 ############################################# USER ################################################
 ###################################################################################################
 
+# register user using UserSignUpRequestModel
+def register_user(user_model: UserSignUpRequestModel):
+    user = get_user_by_email(user_model.email)
+    if len(user) > 0:
+        raise HTTPException(
+            status_code=409, detail='Email already registered.')
+    user = query_put("""
+        INSERT INTO user (user_first_name, user_last_name, user_email, user_password_hash, user_timezone, user_role)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id, user_first_name, user_last_name, user_email, user_password_hash, user_timezone, user_role
+        """, (user_model.first_name, user_model.last_name, user_model.email, auth_handler.get_password_hash(user_model.password), user_model.user_timezone, user_model.user_role))
+    return user[0]
 
 # sign in user using SignInRequestModel
 def sign_in_user(user_model: SignInRequestModel):
