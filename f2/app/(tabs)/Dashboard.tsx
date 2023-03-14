@@ -105,60 +105,12 @@ const TableComponent = () => {
 };
 
 export default function Dashboard() {
-  const tableHead = [
-    "User Name",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Total Hours",
-  ];
-  const tableData = [
-    [
-      "User 1",
-      "8:00 AM\n12:00 PM\n1:00 PM",
-      "9:00 AM\n1:00 PM\n2:00 PM",
-      "8:30 AM\n12:30 PM\n1:30 PM",
-      "9:15 AM\n1:15 PM\n2:15 PM",
-      "8:45 AM\n12:45 PM\n1:45 PM",
-      "34:30",
-    ],
-    [
-      "User 2",
-      "9:00 AM\n12:30 PM\n1:30 PM",
-      "8:00 AM\n12:15 PM\n1:15 PM",
-      "8:30 AM\n12:45 PM\n2:15 PM",
-      "9:15 AM\n1:30 PM\n1:30 PM",
-      "8:45 AM\n1:00 PM\n2:30 PM",
-      "34:30",
-    ],
-    [
-      "User 3",
-      "8:30 AM\n12:15 PM\n1:45 PM",
-      "9:00 AM\n12:45 PM\n1:15 PM",
-      "9:30 AM\n1:30 PM\n2:15 PM",
-      "8:15 AM\n12:30 PM\n1:30 PM",
-      "8:45 AM\n1:15 PM\n2:30 PM",
-      "35:00",
-    ],
-    [
-      "User 4",
-      "9:00 AM\n12:30 PM\n1:30 PM",
-      "8:30 AM\n12:45 PM\n1:15 PM",
-      "8:45 AM\n12:15 PM\n2:00 PM",
-      "9:15 AM\n1:30 PM\n2:15 PM",
-      "8:00 AM\n1:00 PM\n2:30 PM",
-      "34:30",
-    ],
-  ];
-
   return (
     <NativeBaseProvider>
       <View style={styles.container}>
         {/* Title */}
         {/* time card icon */}
-        <View style={styles.header}>
+        <View style={styles.head}>
         <Text style={styles.title}>
           <Icon
             as={<Ionicons name="time-outline" />}
