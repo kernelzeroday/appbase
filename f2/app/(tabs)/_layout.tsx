@@ -207,6 +207,21 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* report */}
+      <Tabs.Screen
+        name="report"
+        options={{
+          title: "Report",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // report icon
+              name="file-text"
+              color={color}
+            />
+          ),
+        }}
+      />
+      
       
 
     </Tabs>
