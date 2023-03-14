@@ -1,12 +1,11 @@
 import { StyleSheet } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
-import { Button, Container, NativeBaseProvider } from "native-base";
+import { Button, Container, Icon, NativeBaseProvider } from "native-base";
 
 import EditScreenInfo from "../../components/EditScreenInfo";
 import { Text, View } from "../../components/Themed";
 import React from "react";
-
-
+import { Ionicons } from "@expo/vector-icons";
 
 
 export default function PunchScreen() {
@@ -14,7 +13,17 @@ export default function PunchScreen() {
     <NativeBaseProvider>
       <View style={styles.container}>
         {/* Title */}
-        <Text style={styles.title}>Clock In and Out</Text>
+        <Text style={styles.title}>
+          {/* time icon */}
+          <Icon
+            as={<Ionicons name="time-outline" />}
+            size="lg"
+            color="blue.500"
+            style={{ marginBottom: 10 }}
+          />
+          {/* seperate */}
+          
+          Clock In and Out</Text>
         {/* Separator */}
         <View
           style={styles.separator} 
@@ -29,7 +38,18 @@ export default function PunchScreen() {
                 console.log("Punch in");
               }}
             >
-              <Text style={{ fontSize: 20 }}>Punch In</Text>
+              <Text style={{ fontSize: 20 }}>
+                {/* card icon */}
+                <Icon
+                  as={<Ionicons name="time-outline" />}
+                  size="lg"
+                  color="blue.500"
+                  style={{ marginBottom: 10 }}
+                />
+                {/* seperate */}
+                <Text style={{ marginLeft: 10 }}>
+                Punch In</Text>
+              </Text>
             </Button>
             <Button
               style={{ width: "45%", height: 100 }}
@@ -37,7 +57,20 @@ export default function PunchScreen() {
                 console.log("Punch out");
               }}
             >
-              <Text style={{ fontSize: 20 }}>Punch Out</Text>
+              <Text style={{ fontSize: 20 }}>
+                {/* punch out icon */}
+                <Icon
+                  as={<Ionicons name="time-outline" />}
+                  size="lg"
+                  color="blue.500"
+                  style={{ marginBottom: 10 }}
+                />
+                {/* seperate */}  
+                <Text style={{ marginLeft: 10 }}>
+
+                Punch Out</Text>
+              </Text>
+              
             </Button>
             </View>
               

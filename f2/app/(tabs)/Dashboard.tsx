@@ -1,10 +1,16 @@
 import { StyleSheet } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
-import { Button, Container, NativeBaseProvider } from "native-base";
-
-import EditScreenInfo from "../../components/EditScreenInfo";
-import { Text, View } from "../../components/Themed";
+import {
+  Button,
+  Container,
+  Icon,
+  NativeBaseProvider,
+  Text,
+  View,
+} from "native-base";
+// import { Text, View } from "../../components/Themed";
 import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const TableComponent = () => {
   const data = [
@@ -65,8 +71,7 @@ const TableComponent = () => {
       month_total_hours: 33.0,
     },
   ];
-  
-  
+
   const tableHead = [
     "Name",
     "Date",
@@ -152,7 +157,20 @@ export default function Dashboard() {
     <NativeBaseProvider>
       <View style={styles.container}>
         {/* Title */}
-        <Text style={styles.title}>Time Card</Text>
+        {/* time card icon */}
+        <View style={styles.header}>
+        <Text style={styles.title}>
+          <Icon
+            as={<Ionicons name="time-outline" />}
+            size="lg"
+            color="blue.500"
+            style={{ marginBottom: 10 }}
+          />
+          {/* seperate */}
+          <Text style={{ marginLeft: 10 }}>
+          Time Card</Text>
+        </Text>
+        </View>
         {/* Separator */}
         <View style={styles.separator} />
         {/* set up table boundry */}
@@ -207,4 +225,5 @@ const styles = StyleSheet.create({
     height: 60,
   },
   table: { flex: 1, marginTop: 20 },
+  cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
 });
