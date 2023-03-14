@@ -28,10 +28,13 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Login",
-          tabBarIcon: ({ color }) => <TabBarIcon 
-          // login icon
-          name="user-circle"
-          color={color} />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // login icon
+              name="user-circle"
+              color={color}
+            />
+          ),
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
@@ -50,13 +53,16 @@ export default function TabLayout() {
       />
       {/* tab two */}
       <Tabs.Screen
-        name="two"
+        name="Dashboard"
         options={{
           title: "Dashboard",
-          tabBarIcon: ({ color }) => <TabBarIcon 
-          // dashboard icon
-          name="home"
-          color={color} />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // dashboard icon
+              name="home"
+              color={color}
+            />
+          ),
         }}
       />
       {/* punch tab */}
@@ -64,13 +70,145 @@ export default function TabLayout() {
         name="punch"
         options={{
           title: "Punch",
-          tabBarIcon: ({ color }) => <TabBarIcon
-          // punch icon
-          name="clock-o"
-          color={color} />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // punch icon
+              name="clock-o"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* account tab */}
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // account icon
+              name="user"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* AdminCreateUser tab */}
+      <Tabs.Screen
+        name="AdminCreateUser"
+        options={{
+          title: "Create User",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // wrench icon
+              name="user-plus"
+              color={color}
+            />            
+          ),
+        }}
+      />
+      {/* AdminModifyUser tab */}
+      <Tabs.Screen
+        name="AdminModifyUser"
+        options={{
+          title: "Modify User",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // wrench icon
+              name="wrench"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* about */}
+      <Tabs.Screen 
+        name="about"
+        options={{
+          title: "About",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // about icon
+              name="info-circle"
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      {/* new admin */}
+      <Tabs.Screen
+        name="NewAdmin"
+        options={{
+          title: "New Admin",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // admin icon
+              name="user-secret"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* contact */}
+      <Tabs.Screen
+        name="contact"
+        options={{
+          title: "Contact",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // contact icon
+              name="envelope"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* helpticket */}
+      <Tabs.Screen
+        name="helpticket"
+        options={{
+          title: "Help Ticket",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // help ticket icon
+              name="ticket"
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* adminviewticket */}
+      <Tabs.Screen
+        name="adminviewticket"
+        options={{
+          title: "Admin View Ticket",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // admin view ticket icon
+              name="ticket"
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      {/* login2 */}
+      <Tabs.Screen
+        name="login2"
+        options={{
+          title: "Login2",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // login icon
+              name="user-circle"
+              color={color}
+            />
+          ),
         }}
       />
       
+
     </Tabs>
   );
 }
