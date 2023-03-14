@@ -99,7 +99,7 @@ const TableComponent = () => {
   );
 };
 
-export default function TabTwoScreen() {
+export default function Dashboard() {
   const tableHead = [
     "User Name",
     "Monday",
