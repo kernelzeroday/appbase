@@ -6,7 +6,9 @@ import {
   Input,
   Text,
   NativeBaseProvider,
+  Image,
 } from "native-base";
+import { FontAwesome } from "@expo/vector-icons";
 
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +21,23 @@ const SignInScreen = () => {
   return (
     <NativeBaseProvider>
       <Container style={styles.container}>
+        {/* logo from assets  */}
+        {/* <Image
+            source={require("../../assets/images/logo.jpg")}
+            style={{ width: 200, height: 200 }}
+            /> */}
+        {/* vector logo from font awesome */}
+        {/* <FontAwesome name="user-circle" size={200} color="black" /> */}
+
+        <View
+          style={{ flexDirection: "row", backgroundColor: "#eee", padding: 20 }}
+        >
+          <FontAwesome name="clock-o" size={100} color="black" />
+          {/* padding */}
+            <View style={{ width: 20 }} />
+          <FontAwesome name="vcard" size={100} color="black" />
+        </View>
+
         {/* Login Section */}
         <Text style={styles.title}>Royal Admin Time Portal Login</Text>
         {/* test button */}
@@ -49,7 +68,7 @@ const SignInScreen = () => {
           style={styles.input}
           secureTextEntry
         />
-        <Button block onPress={handleSignIn} style={styles.button}>
+        <Button onPress={handleSignIn} style={styles.button}>
           <Text>Sign In</Text>
         </Button>
         {/* Warnings */}
@@ -82,8 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
