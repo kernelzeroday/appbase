@@ -4,10 +4,18 @@ import EditScreenInfo from "../../components/EditScreenInfo";
 import { Text, View } from "../../components/Themed";
 import { DefaultService } from "../client";
 import React from "react";
+import { Navigate } from "react-router-dom";
 
 async function ClientTestFunc() {
   const res = await DefaultService.notSecretDataApiNotSecretGet();
   console.log(res);
+}
+
+// login handler with navigation
+async function LoginHandler(email: any, password: any) {
+  const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+  //navigate home page in react
+  // if fail, display error message
 }
 
 export default function TabOneScreen() {
@@ -34,7 +42,7 @@ export default function TabOneScreen() {
       </View>
       {/* spacer */}
       <View style={{ height: 10 }} />
-      
+
 
       {/* input areas for email and password */}
 
