@@ -442,26 +442,52 @@ def admin_delete_user(admin: str, user: AdminUserUpdateRequestModel):
     )
     return "User deleted."
 
-# admin function to update users password using UserUpdateRequestModel only if the admin has admin role
-def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
-    admin = admin_get_role(admin.admin_email)
-    # if admin is not an admin, return an error message
-    if admin != 'admin':
-        return "Error: You do not have permission to view this page."
+# this function is to sort the data from admin_get_all_users_timesheet
+def fix_output(data):
+    transformed_data = []
+    for item in data:
+        user_id = item['user_id']
+        date = item['date']
+        clock_in_time = str(datetime.min + item['clock_in_time']).split()[1]
+        clock_out_time = str(datetime.min + item['clock_out_time']).split()[1]
 
-    # hash the password using AuthHandler
-    hashed_password = auth_handler.get_password_hash(user.user_password)
+        existing_item = next((x for x in transformed_data if x['user_id'] == user_id and x['date'] == str(date)), None)
+        if existing_item:
+            existing_item['clock_in_times'].append(clock_in_time)
+            existing_item['clock_out_times'].append(clock_out_time)
+        else:
+            transformed_data.append({
+                'user_id': user_id,
+                'first_name': item['first_name'],
+                'last_name': item['last_name'],
+                'email': item['email'],
+                'date': str(date),
+                'clock_in_times': [clock_in_time],
+                'clock_out_times': [clock_out_time],
+                'total_hours': 0.0,
+                'week_number': 0,
+                'week_total_hours': 0.0,
+                'month_name': '',
+                'month_total_hours': 0.0
+            })
 
-    # update the user's password in the database
-    query_put("""
-        UPDATE user
-        SET password = %s
-        WHERE user_email = %s;
-    """,
-        (hashed_password, user.user_email)
-    )
-    user = get_user_by_email(user.user_email)
-    return user[0]
+    for item in transformed_data:
+        # Calculate total hours
+        total_seconds = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(inp, '%H:%M:%S')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
+        item['total_hours'] = round(total_seconds / 3600, 1)
+
+        # Calculate week number and week total hours
+        date = datetime.strptime(item['date'], '%Y-%m-%d')
+        item['week_number'] = date.isocalendar()[1]
+        week_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and x['week_number'] == item['week_number']]
+        item['week_total_hours'] = sum([x['total_hours'] for x in week_items])
+
+        # Calculate month name and month total hours
+        item['month_name'] = date.strftime('%B')
+        month_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and datetime.strptime(x['date'], '%Y-%m-%d').month == date.month]
+        item['month_total_hours'] = sum([x['total_hours'] for x in month_items])
+
+    return transformed_data
 
 
 # this function is to sort the data from admin_get_all_users_timesheet
