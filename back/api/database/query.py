@@ -33,7 +33,13 @@ def query_get_timecard(sql):
             cursor.execute(sql)
             return cursor.fetchall()
 
-
+def query_get_timecard(sql):
+    connection = init_connection()
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            return cursor.fetchall()
+        
 def query_put(sql, param):
     connection = init_connection()
     with connection:
