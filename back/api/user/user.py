@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from database.query import query_get, query_put, query_update
+from database.query import query_get, query_put, query_update, query_get_timecard
 from .auth import Auth
 from .models import *
 
@@ -463,6 +463,54 @@ def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
     user = get_user_by_email(user.user_email)
     return user[0]
 
+
+# this function is to sort the data from admin_get_all_users_timesheet
+def fix_output(data):
+    transformed_data = []
+    for item in data:
+        user_id = item['user_id']
+        date = item['date']
+        clock_in_time = str(datetime.min + item['clock_in_time']).split()[1]
+        clock_out_time = str(datetime.min + item['clock_out_time']).split()[1]
+
+        existing_item = next((x for x in transformed_data if x['user_id'] == user_id and x['date'] == str(date)), None)
+        if existing_item:
+            existing_item['clock_in_times'].append(clock_in_time)
+            existing_item['clock_out_times'].append(clock_out_time)
+        else:
+            transformed_data.append({
+                'user_id': user_id,
+                'first_name': item['first_name'],
+                'last_name': item['last_name'],
+                'email': item['email'],
+                'date': str(date),
+                'clock_in_times': [clock_in_time],
+                'clock_out_times': [clock_out_time],
+                'total_hours': 0.0,
+                'week_number': 0,
+                'week_total_hours': 0.0,
+                'month_name': '',
+                'month_total_hours': 0.0
+            })
+
+    for item in transformed_data:
+        # Calculate total hours
+        total_seconds = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(inp, '%H:%M:%S')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
+        item['total_hours'] = round(total_seconds / 3600, 1)
+
+        # Calculate week number and week total hours
+        date = datetime.strptime(item['date'], '%Y-%m-%d')
+        item['week_number'] = date.isocalendar()[1]
+        week_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and x['week_number'] == item['week_number']]
+        item['week_total_hours'] = sum([x['total_hours'] for x in week_items])
+
+        # Calculate month name and month total hours
+        item['month_name'] = date.strftime('%B')
+        month_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and datetime.strptime(x['date'], '%Y-%m-%d').month == date.month]
+        item['month_total_hours'] = sum([x['total_hours'] for x in month_items])
+
+    return transformed_data
+
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers
 def admin_get_all_users_timesheet(admin: str) -> List[dict]:
 
@@ -472,12 +520,10 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
     # if admin is not an admin, return an error message
     if admin != 'admin':
         return "Error: You do not have permission to view this page."
+    
 
-    today = datetime.today()
-    start_of_week = today - timedelta(days=today.weekday())
-    end_of_week = start_of_week + timedelta(days=6)
 
-    data = query_get("""
+    data = query_get_timecard("""
         SELECT 
             clock_times.user_id,
             user.user_first_name,
@@ -488,9 +534,8 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
             TIME(clock_times.clock_out_time) AS clock_out_time
         FROM clock_times
         JOIN user ON clock_times.user_id = user.id
-        WHERE clock_times.clock_in_time BETWEEN %s AND %s
-        ORDER BY clock_times.user_id, DATE(clock_times.clock_in_time), clock_times.clock_in_time, clock_times.clock_out_time;
-    """, (start_of_week, end_of_week))
+    """)
+    #print(data)
 
     results = []
     for item in data:
@@ -502,36 +547,19 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
         clock_in_time = item['clock_in_time']
         clock_out_time = item['clock_out_time']
 
-        # find the existing result for this date, or create a new one if none exists
-        result = next((r for r in results if r['user_id'] == user_id and r['date'] == date), None)
-        if result is None:
-            result = {
-                'user_id': user_id,
-                'user_first_name': first_name,
-                'user_last_name': last_name,
-                'user_email': email,
-                'date': date,
-                'clock_in_times': [],
-                'clock_out_times': [],
-                'total_hours': 0.0,
-                'week_number': start_of_week.isocalendar()[1],
-                'week_total_hours': 0.0,
-                'month_name': today.strftime('%B'),
-                'month_total_hours': 0.0
-            }
-            results.append(result)
+        # create a new result for this user and date
+        result = {
+            'user_id': user_id,
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'date': date,
+            'clock_in_time': clock_in_time,
+            'clock_out_time': clock_out_time,
+        }
+        results.append(result)
 
-        # add the clock in/out times to the result
-        result['clock_in_times'].append(clock_in_time)
-        result['clock_out_times'].append(clock_out_time)
+    # sort the results by user_id and date
+    sorted_results = sorted(results, key=lambda x: (x['user_id'], x['date']))
 
-    # calculate the total hours for each result
-    for result in results:
-        clock_in_times = result['clock_in_times']
-        clock_out_times = result['clock_out_times']
-        total_hours = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(clock_in, '%H:%M:%S')).total_seconds() / 3600.0 for clock_in, out in zip(clock_in_times, clock_out_times)])
-        result['total_hours'] = round(total_hours, 2)
-        result['week_total_hours'] = round(total_hours, 2)
-        result['month_total_hours'] = round(total_hours, 2)
-
-    return results
+    return fix_output(sorted_results)
