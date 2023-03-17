@@ -9,9 +9,11 @@ import {
   View,
 } from "native-base";
 // import { Text, View } from "../../components/Themed";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { OpenAPI } from '../client/core/OpenAPI';
+
+import { useFocusEffect } from '@react-navigation/native';
 
 import type { TimesheetResponseModel } from '../client/models/TimesheetResponseModel';
 import { DefaultService } from "../client";
@@ -75,27 +77,86 @@ let initData = [
     month_total_hours: 33.0,
   },
 ];
-const [data, setData] = useState(initData);
 
-// type TimeEntry = {
-//   user_id: number;
-//   first_name: string;
-//   last_name: string;
-//   email: string;
-//   date: string;
-//   clock_in_times: string[];
-//   clock_out_times: string[];
-//   total_hours: number;
-//   week_number: number;
-//   week_total_hours: number;
-//   month_name: string;
-//   month_total_hours: number;
-// } 
+
+
+// const [data, setData] = useState(initData);
+
+
+const makeTableData = (data) => {
+  return data.map((item) => [
+    // `${item.first_name} ${item.last_name}`, // TODO name
+    item.date,
+    item.clock_in_times.join(", "),
+    item.clock_out_times.join(", "),
+    item.total_hours,
+    item.week_number,
+    item.week_total_hours,
+    item.month_name,
+    item.month_total_hours,
+  ]);
+};
+
+
+
 
 const TableComponent = () => {
 
+  const [timecardData, setTimecardData] = useState<any|undefined>(initData);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      console.log('ok');
+      // console.log(data);
+      // setInnerData([]);
+      retrieveData();
+      // tableData = retrieveData();
+
+      // tableData = makeTableData();
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
+
+  const retrieveData = async () => {
+    console.log(OpenAPI);
+    const res = await DefaultService.getTimecardApiV1TimecardGet();
+    // const res = 
+    // {
+    //   "clock_times": [
+    //       {
+    //           "date": "2023-03-17",
+    //           "clock_in_times": [
+    //               "01:11:15",
+    //               "01:19:11",
+    //               "01:30:00",
+    //               "01:47:18"
+    //           ],
+    //           "clock_out_times": [
+    //               "01:11:18",
+    //               "01:19:12",
+    //               "01:30:01",
+    //               "01:47:18"
+    //           ],
+    //           "total_hours": 0,
+    //           "week_number": 1,
+    //           "week_total_hours": 0,
+    //           "month_name": "March",
+    //           "month_total_hours": 0
+    //       }
+    //   ]
+    // };
+    console.log((res as any));
+    if((res as any).clock_times) {
+      setTimecardData((res as any).clock_times);
+    }
+  };
+
   const tableHead = [
-    "Name",
+    // "Name", // TODO name
     "Date",
     "Clock In",
     "Clock Out",
@@ -106,17 +167,7 @@ const TableComponent = () => {
     "Month Total",
   ];
 
-  const tableData = data.map((item) => [
-    `${item.first_name} ${item.last_name}`,
-    item.date,
-    item.clock_in_times.join(", "),
-    item.clock_out_times.join(", "),
-    item.total_hours,
-    item.week_number,
-    item.week_total_hours,
-    item.month_name,
-    item.month_total_hours,
-  ]);
+  let tableData = useMemo(() => makeTableData(timecardData), [timecardData]);
 
   return (
     <Table style={styles.table}>
@@ -126,21 +177,8 @@ const TableComponent = () => {
   );
 };
 
-// const retrieveData = async () => {
-//   console.log(OpenAPI);
-//   const res = await DefaultService.getTimecardApiV1TimecardGet();
-//   console.log(res);
-// };
-// retrieveData();
 
 export default function Dashboard() {
-  const retrieveData = async () => {
-    console.log(OpenAPI);
-    const res = await DefaultService.getTimecardApiV1TimecardGet();
-    // setData(res.clockTimes);
-    console.log(res);
-  };
-  retrieveData();
 
   return (
     <NativeBaseProvider>
@@ -209,9 +247,11 @@ const styles = StyleSheet.create({
   text: {
     margin: 6,
     textAlign: "center",
+    backgroundColor: "#f1f8ff",
   },
   row: {
     height: 60,
+    backgroundColor: "#f1f8ff",
   },
   table: { flex: 1, marginTop: 20 },
   cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
