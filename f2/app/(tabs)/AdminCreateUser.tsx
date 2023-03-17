@@ -3,15 +3,26 @@ import { StyleSheet } from "react-native";
 import { Button, Container, Input, NativeBaseProvider, Text, View } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 
+import type { UserSignUpRequestModel } from '../client/models/UserSignUpRequestModel';
+
+import { DefaultService } from "../client";
+
 export default function AdminCreateUserScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
-    // handle form submission here
-    console.log(firstName, lastName, email, password);
+  const handleSubmit = async () => {
+    const signupRequest: UserSignUpRequestModel = {
+      user_email: email,
+      user_password: password,
+      user_first_name: firstName,
+      user_last_name: lastName,
+      user_timezone: "",
+      user_role: ""
+    };
+    const res = await DefaultService.signupApiV1SignupPost(signupRequest);
   };
 
   return (
