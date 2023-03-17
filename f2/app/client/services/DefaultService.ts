@@ -148,7 +148,8 @@ export class DefaultService {
      * @returns TimesheetResponseModel Successful Response
      * @throws ApiError
      */
-    public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<TimesheetResponseModel>> {
+    // public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<TimesheetResponseModel>> {
+    public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/timecard',

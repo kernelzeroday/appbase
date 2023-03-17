@@ -9,13 +9,24 @@ import {
   Image,
 } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
+import { OpenAPI } from '../client/core/OpenAPI';
+
+import { DefaultService } from "../client";
 
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
+    const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+    OpenAPI.TOKEN = res.token.access_token;
+    // TODO error handling
+
+    // navigate to signin landing page - store token in state if not error
+
+    //   /Dashboard
     // TODO: implement sign in logic
+
   };
 
   return (

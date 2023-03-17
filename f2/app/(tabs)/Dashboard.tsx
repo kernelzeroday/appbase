@@ -9,68 +9,90 @@ import {
   View,
 } from "native-base";
 // import { Text, View } from "../../components/Themed";
-import React from "react";
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { OpenAPI } from '../client/core/OpenAPI';
+
+import type { TimesheetResponseModel } from '../client/models/TimesheetResponseModel';
+import { DefaultService } from "../client";
+
+
+let initData = [
+  {
+    user_id: 1,
+    first_name: "John",
+    last_name: "Doe",
+    email: "john.doe@example.com",
+    date: "2023-03-13",
+    clock_in_times: ["09:00:00"],
+    clock_out_times: ["17:00:00"],
+    total_hours: 8.0,
+    week_number: 11,
+    week_total_hours: 8.0,
+    month_name: "March",
+    month_total_hours: 8.0,
+  },
+  {
+    user_id: 2,
+    first_name: "Jane",
+    last_name: "Doe",
+    email: "jane.doe@example.com",
+    date: "2023-03-14",
+    clock_in_times: ["08:00:00"],
+    clock_out_times: ["16:30:00"],
+    total_hours: 8.5,
+    week_number: 11,
+    week_total_hours: 16.5,
+    month_name: "March",
+    month_total_hours: 16.5,
+  },
+  {
+    user_id: 3,
+    first_name: "Bob",
+    last_name: "Smith",
+    email: "bob.smith@example.com",
+    date: "2023-03-15",
+    clock_in_times: ["08:30:00", "12:00:00"],
+    clock_out_times: ["12:00:00", "16:30:00"],
+    total_hours: 8.0,
+    week_number: 11,
+    week_total_hours: 24.5,
+    month_name: "March",
+    month_total_hours: 24.5,
+  },
+  {
+    user_id: 4,
+    first_name: "Alice",
+    last_name: "Johnson",
+    email: "alice.johnson@example.com",
+    date: "2023-03-16",
+    clock_in_times: ["09:00:00", "12:30:00"],
+    clock_out_times: ["12:00:00", "17:00:00"],
+    total_hours: 8.5,
+    week_number: 11,
+    week_total_hours: 33.0,
+    month_name: "March",
+    month_total_hours: 33.0,
+  },
+];
+const [data, setData] = useState(initData);
+
+// type TimeEntry = {
+//   user_id: number;
+//   first_name: string;
+//   last_name: string;
+//   email: string;
+//   date: string;
+//   clock_in_times: string[];
+//   clock_out_times: string[];
+//   total_hours: number;
+//   week_number: number;
+//   week_total_hours: number;
+//   month_name: string;
+//   month_total_hours: number;
+// } 
 
 const TableComponent = () => {
-  const data = [
-    {
-      user_id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "john.doe@example.com",
-      date: "2023-03-13",
-      clock_in_times: ["09:00:00"],
-      clock_out_times: ["17:00:00"],
-      total_hours: 8.0,
-      week_number: 11,
-      week_total_hours: 8.0,
-      month_name: "March",
-      month_total_hours: 8.0,
-    },
-    {
-      user_id: 2,
-      first_name: "Jane",
-      last_name: "Doe",
-      email: "jane.doe@example.com",
-      date: "2023-03-14",
-      clock_in_times: ["08:00:00"],
-      clock_out_times: ["16:30:00"],
-      total_hours: 8.5,
-      week_number: 11,
-      week_total_hours: 16.5,
-      month_name: "March",
-      month_total_hours: 16.5,
-    },
-    {
-      user_id: 3,
-      first_name: "Bob",
-      last_name: "Smith",
-      email: "bob.smith@example.com",
-      date: "2023-03-15",
-      clock_in_times: ["08:30:00", "12:00:00"],
-      clock_out_times: ["12:00:00", "16:30:00"],
-      total_hours: 8.0,
-      week_number: 11,
-      week_total_hours: 24.5,
-      month_name: "March",
-      month_total_hours: 24.5,
-    },
-    {
-      user_id: 4,
-      first_name: "Alice",
-      last_name: "Johnson",
-      email: "alice.johnson@example.com",
-      date: "2023-03-16",
-      clock_in_times: ["09:00:00", "12:30:00"],
-      clock_out_times: ["12:00:00", "17:00:00"],
-      total_hours: 8.5,
-      week_number: 11,
-      week_total_hours: 33.0,
-      month_name: "March",
-      month_total_hours: 33.0,
-    },
-  ];
 
   const tableHead = [
     "Name",
@@ -104,7 +126,22 @@ const TableComponent = () => {
   );
 };
 
+// const retrieveData = async () => {
+//   console.log(OpenAPI);
+//   const res = await DefaultService.getTimecardApiV1TimecardGet();
+//   console.log(res);
+// };
+// retrieveData();
+
 export default function Dashboard() {
+  const retrieveData = async () => {
+    console.log(OpenAPI);
+    const res = await DefaultService.getTimecardApiV1TimecardGet();
+    // setData(res.clockTimes);
+    console.log(res);
+  };
+  retrieveData();
+
   return (
     <NativeBaseProvider>
       <View style={styles.container}>
