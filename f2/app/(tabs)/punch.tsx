@@ -7,8 +7,18 @@ import { Text, View } from "../../components/Themed";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 
+import { DefaultService } from "../client";
 
 export default function PunchScreen() {
+
+  const handlePunchIn = async () => {
+    const res = await DefaultService.clockinApiV1ClockinPost();
+  };
+
+  const handlePunchOut = async () => {
+    const res = await DefaultService.clockoutApiV1ClockoutPost();
+  };
+
   return (
     <NativeBaseProvider>
       <View style={styles.container}>
@@ -34,9 +44,7 @@ export default function PunchScreen() {
           <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <Button
               style={{ width: "45%", height: 100 }}
-              onPress={() => {
-                console.log("Punch in");
-              }}
+              onPress={handlePunchIn}
             >
               <Text style={{ fontSize: 20 }}>
                 {/* card icon */}
@@ -53,9 +61,7 @@ export default function PunchScreen() {
             </Button>
             <Button
               style={{ width: "45%", height: 100 }}
-              onPress={() => {
-                console.log("Punch out");
-              }}
+              onPress={handlePunchOut}
             >
               <Text style={{ fontSize: 20 }}>
                 {/* punch out icon */}
