@@ -3,53 +3,22 @@ import { Pressable, StyleSheet, Button, TextInput } from "react-native";
 import EditScreenInfo from "../../components/EditScreenInfo";
 import { Text, View } from "../../components/Themed";
 import { DefaultService } from "../client";
-import React, { useState } from "react";
-// import { Navigate } from "react-router-dom";
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 async function ClientTestFunc() {
   const res = await DefaultService.notSecretDataApiNotSecretGet();
   console.log(res);
 }
 
-// const TabOneScreen = () => {
+// login handler with navigation
+async function LoginHandler(email: any, password: any) {
+  const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+  //navigate home page in react
+  // if fail, display error message
+}
 
-
-// }
-
-const TabOneScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-    // login handler with navigation
-  const HandleLogin = async (email: any, password: any) => {
-    const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
-    //navigate home page in react
-    // if fail, display error message
-  }
-
-  const handleChange = async () => {
-  }
-
-
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    separator: {
-      marginVertical: 30,
-      height: 1,
-      width: "80%",
-    },
-  });
-
-
+export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       {/* Login Section */}
@@ -81,7 +50,6 @@ const TabOneScreen = () => {
       <TextInput
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
         placeholder="  Email"
-        onChange={this.handleChange}
       />
 
       {/* spacer */}
@@ -96,7 +64,7 @@ const TabOneScreen = () => {
       <View style={{ height: 10 }} />
 
       {/* login button  */}
-      <Button title="Login" onPress={this.HandleLogin} />
+      <Button title="Login" onPress={ClientTestFunc} />
 
       {/* Warnings */}
       <View style={{ height: 10 }} />
@@ -126,4 +94,19 @@ const TabOneScreen = () => {
   );
 }
 
-export default TabOneScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  separator: {
+    marginVertical: 30,
+    height: 1,
+    width: "80%",
+  },
+});
