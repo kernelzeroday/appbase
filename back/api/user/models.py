@@ -68,6 +68,16 @@ class TimesheetResponseModelAllUsers(BaseModel):
     user_time_zones: List[UserTimeZoneResponseModel] = []
     all_users: List[UserResponseModel] = []
 
+# this class is the timesheet response model for a single user in the database, this class will contain an array of clock objects for a single user
+class TimesheetResponseModelSingleUser(BaseModel):
+    clock_times: List[ClockTimesResponseModel] = []
+    datetime: datetime = None
+    total_hours: float = None
+    week_number: int = None
+    week_total_hours: float = None
+    month_name: str = None
+    month_total_hours: float = None
+
 
 # this class is for admin signup request model
 class AdminSignUpRequestModel(BaseModel):
