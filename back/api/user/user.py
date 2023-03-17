@@ -123,8 +123,11 @@ def get_user_by_id(id: int):
 ######################################## USER TIME SHEET ##########################################
 ###################################################################################################
 
-# get user timesheet data by email query
-def get_user_timesheet_by_email(email: str) -> List[Dict]:
+# get user timesheet data by email query using UserTimeSheetRequestModel
+def get_user_timesheet_by_email(user_model: TimesheetResponseModelSingleUser) -> List[Dict]:
+    
+    email  = get_user_by_email(user_model.user_email)[0]['user_email']
+
     user = query_get("""
         SELECT 
             clock_times.clock_in_time,
