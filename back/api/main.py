@@ -11,12 +11,14 @@ from datetime import datetime, timedelta
 app = FastAPI()
 
 origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:4000",
-    "http://localhost:19006"
+    "http://royaltimeclock.com",
+    "http://api.royaltimeclock.com",
+    "http://api.royaltimeclock.com:8000",
+    "http://royaltimeclock.com:8000",
+    "http://royaltimeclock.com:3000",
+    "http://royaltimeclock.com:3001",
+    "http://royaltimeclock.com:4000",
+    "http://royaltimeclock.com:19006"
 ]
 app.add_middleware(
     CORSMiddleware,
