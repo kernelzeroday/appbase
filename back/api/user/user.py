@@ -123,9 +123,8 @@ def get_user_by_id(id: int):
 ######################################## USER TIME SHEET ##########################################
 ###################################################################################################
 
-# get user timesheet data by email query using UserTimeSheetRequestModel
+# get user timesheet data by email query
 def get_user_timesheet_by_email(email: str) -> List[Dict]:
-
     user = query_get("""
         SELECT 
             clock_times.clock_in_time,
@@ -443,52 +442,26 @@ def admin_delete_user(admin: str, user: AdminUserUpdateRequestModel):
     )
     return "User deleted."
 
-# this function is to sort the data from admin_get_all_users_timesheet
-def fix_output(data):
-    transformed_data = []
-    for item in data:
-        user_id = item['user_id']
-        date = item['date']
-        clock_in_time = str(datetime.min + item['clock_in_time']).split()[1]
-        clock_out_time = str(datetime.min + item['clock_out_time']).split()[1]
+# admin function to update users password using UserUpdateRequestModel only if the admin has admin role
+def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
+    admin = admin_get_role(admin.admin_email)
+    # if admin is not an admin, return an error message
+    if admin != 'admin':
+        return "Error: You do not have permission to view this page."
 
-        existing_item = next((x for x in transformed_data if x['user_id'] == user_id and x['date'] == str(date)), None)
-        if existing_item:
-            existing_item['clock_in_times'].append(clock_in_time)
-            existing_item['clock_out_times'].append(clock_out_time)
-        else:
-            transformed_data.append({
-                'user_id': user_id,
-                'first_name': item['first_name'],
-                'last_name': item['last_name'],
-                'email': item['email'],
-                'date': str(date),
-                'clock_in_times': [clock_in_time],
-                'clock_out_times': [clock_out_time],
-                'total_hours': 0.0,
-                'week_number': 0,
-                'week_total_hours': 0.0,
-                'month_name': '',
-                'month_total_hours': 0.0
-            })
+    # hash the password using AuthHandler
+    hashed_password = auth_handler.get_password_hash(user.user_password)
 
-    for item in transformed_data:
-        # Calculate total hours
-        total_seconds = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(inp, '%H:%M:%S')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
-        item['total_hours'] = round(total_seconds / 3600, 1)
-
-        # Calculate week number and week total hours
-        date = datetime.strptime(item['date'], '%Y-%m-%d')
-        item['week_number'] = date.isocalendar()[1]
-        week_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and x['week_number'] == item['week_number']]
-        item['week_total_hours'] = sum([x['total_hours'] for x in week_items])
-
-        # Calculate month name and month total hours
-        item['month_name'] = date.strftime('%B')
-        month_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and datetime.strptime(x['date'], '%Y-%m-%d').month == date.month]
-        item['month_total_hours'] = sum([x['total_hours'] for x in month_items])
-
-    return transformed_data
+    # update the user's password in the database
+    query_put("""
+        UPDATE user
+        SET password = %s
+        WHERE user_email = %s;
+    """,
+        (hashed_password, user.user_email)
+    )
+    user = get_user_by_email(user.user_email)
+    return user[0]
 
 
 # this function is to sort the data from admin_get_all_users_timesheet
@@ -514,10 +487,7 @@ def fix_output(data):
                 'clock_in_times': [clock_in_time],
                 'clock_out_times': [clock_out_time],
                 'total_hours': 0.0,
-                'week_number': 0,
-                'week_total_hours': 0.0,
-                'month_name': '',
-                'month_total_hours': 0.0
+                'week_total_hours': 0.0
             })
 
     for item in transformed_data:
@@ -525,16 +495,9 @@ def fix_output(data):
         total_seconds = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(inp, '%H:%M:%S')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
         item['total_hours'] = round(total_seconds / 3600, 1)
 
-        # Calculate week number and week total hours
-        date = datetime.strptime(item['date'], '%Y-%m-%d')
-        item['week_number'] = date.isocalendar()[1]
-        week_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and x['week_number'] == item['week_number']]
+        # Calculate week total hours
+        week_items = [x for x in transformed_data if x['user_id'] == item['user_id']]
         item['week_total_hours'] = sum([x['total_hours'] for x in week_items])
-
-        # Calculate month name and month total hours
-        item['month_name'] = date.strftime('%B')
-        month_items = [x for x in transformed_data if x['user_id'] == item['user_id'] and datetime.strptime(x['date'], '%Y-%m-%d').month == date.month]
-        item['month_total_hours'] = sum([x['total_hours'] for x in month_items])
 
     return transformed_data
 
@@ -590,3 +553,59 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
     sorted_results = sorted(results, key=lambda x: (x['user_id'], x['date']))
 
     return fix_output(sorted_results)
+
+'''
+# admin function to get all users' time records using AdminTimesheetResponseModelAllUsers and download as xlsx file
+def admin_get_all_users_timesheet_download(admin: str) -> List[dict]:
+
+    admin = admin_get_role(admin)
+
+    print(admin)
+    # if admin is not an admin, return an error message
+    if admin != 'admin':
+        return "Error: You do not have permission to view this page."
+    
+
+
+    data = query_get_timecard("""
+        SELECT 
+            clock_times.user_id,
+            user.user_first_name,
+            user.user_last_name,
+            user.user_email,
+            DATE(clock_times.clock_in_time) AS date,
+            TIME(clock_times.clock_in_time) AS clock_in_time,
+            TIME(clock_times.clock_out_time) AS clock_out_time
+        FROM clock_times
+        JOIN user ON clock_times.user_id = user.id
+    """)
+    #print(data)
+
+    results = []
+    for item in data:
+        user_id = item['user_id']
+        first_name = item['user_first_name']
+        last_name = item['user_last_name']
+        email = item['user_email']
+        date = item['date']
+        clock_in_time = item['clock_in_time']
+        clock_out_time = item['clock_out_time']
+
+        # create a new result for this user and date
+        result = {
+            'user_id': user_id,
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'date': date,
+            'clock_in_time': clock_in_time,
+            'clock_out_time': clock_out_time,
+        }
+        results.append(result)
+
+    # sort the results by user_id and date
+    sorted_results = sorted(results, key=lambda x: (x['user_id'], x['date']))
+
+    return fix_output(sorted_results)
+
+'''

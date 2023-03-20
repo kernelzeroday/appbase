@@ -192,7 +192,21 @@ export default function TabLayout() {
           ),
         }}
       />
-
+      {/* admin time dashboard */}
+      <Tabs.Screen
+        name="AdminTimeDash"
+        options={{
+          title: "Admin Time Dashboard",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              // admin time dashboard icon
+              name="dashboard"
+              color={color}
+            />
+          ),
+        }}
+      />
+      
       {/* login2 */}
       <Tabs.Screen
         name="login2"
