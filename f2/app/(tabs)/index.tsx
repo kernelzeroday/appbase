@@ -10,16 +10,22 @@ import {
 } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { OpenAPI } from '../client/core/OpenAPI';
+import { useLinkTo } from "@react-navigation/native";
 
 import { DefaultService } from "../client";
 
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  const linkTo = useLinkTo();
 
   const handleSignIn = async () => {
     const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
-    OpenAPI.TOKEN = res.token.access_token;
+    OpenAPI.TOKEN = res.token?.access_token;
+    if (res.token?.access_token) {
+      linkTo('/Dashboard');
+    }
     // TODO error handling
 
     // navigate to signin landing page - store token in state if not error
