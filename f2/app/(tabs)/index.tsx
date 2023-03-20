@@ -12,9 +12,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import { OpenAPI } from '../client/core/OpenAPI';
 import { useLinkTo } from "@react-navigation/native";
 
+import { AppContext } from "../_layout";
+
 import { DefaultService } from "../client";
 
 const SignInScreen = () => {
+  const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
@@ -26,6 +29,9 @@ const SignInScreen = () => {
     if (res.token?.access_token) {
       linkTo('/Dashboard');
     }
+    setEmail("");
+    setPassword("");
+    setIsUser(true);
     // TODO error handling
 
     // navigate to signin landing page - store token in state if not error
