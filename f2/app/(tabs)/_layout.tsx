@@ -3,7 +3,10 @@ import { Link, Tabs } from "expo-router";
 import { Pressable, useColorScheme } from "react-native";
 
 import Colors from "../../constants/Colors";
-import React from "react";
+import React, { useState } from "react";
+
+import {AppContext} from "../_layout"
+
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -14,6 +17,12 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
+
+const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
+
+
+// const [isUser, setIsUser] = React.useState(false);
+// const [isAdmin, setIsAdmin] = React.useState(false);
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -54,7 +63,7 @@ export default function TabLayout() {
       {/* tab two */}
       <Tabs.Screen
         name="Dashboard"
-        options={{
+        options={isUser !== null && isUser ? {
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -63,12 +72,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* punch tab */}
       <Tabs.Screen
         name="punch"
-        options={{
+        options={isUser !== null && isUser ? {
           title: "Punch",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -77,12 +87,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* account tab */}
       <Tabs.Screen
         name="account"
-        options={{
+        options={isUser !== null && isUser ? {
           title: "Account",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -91,12 +102,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* AdminCreateUser tab */}
       <Tabs.Screen
         name="AdminCreateUser"
-        options={{
+        options={isAdmin ? {
           title: "Create User",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -105,12 +117,13 @@ export default function TabLayout() {
               color={color}
             />            
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* AdminModifyUser tab */}
       <Tabs.Screen
         name="AdminModifyUser"
-        options={{
+        options={isAdmin ? {
           title: "Modify User",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -119,7 +132,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* about */}
       <Tabs.Screen 
@@ -139,7 +153,7 @@ export default function TabLayout() {
       {/* new admin */}
       <Tabs.Screen
         name="NewAdmin"
-        options={{
+        options={isAdmin ? {
           title: "New Admin",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -148,7 +162,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* contact */}
       <Tabs.Screen
@@ -181,7 +196,7 @@ export default function TabLayout() {
       {/* adminviewticket */}
       <Tabs.Screen
         name="adminviewticket"
-        options={{
+        options={isAdmin ? {
           title: "Admin View Ticket",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -190,7 +205,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* admin time dashboard */}
       <Tabs.Screen
@@ -224,7 +240,7 @@ export default function TabLayout() {
       {/* report */}
       <Tabs.Screen
         name="report"
-        options={{
+        options={isAdmin ? {
           title: "Report",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -233,7 +249,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       
       

@@ -20,6 +20,8 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
+export const AppContext = React.createContext(null);
+
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -33,12 +35,19 @@ export default function RootLayout() {
 
   return (
     <>
+
+
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
       {!loaded && <SplashScreen />}
       {loaded && <RootLayoutNav />}
+
     </>
   );
 }
+
+const [isUser, setIsUser] = React.useState(false);
+const [isAdmin, setIsAdmin] = React.useState(false);
+
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -46,10 +55,16 @@ function RootLayoutNav() {
   return (
     <>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <AppContext.Provider value={{
+      isUser: isUser,
+      setIsUser: setIsUser,
+      isAdmin: isAdmin,
+      setIsAdmin: setIsAdmin}}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         </Stack>
+      </AppContext.Provider>
       </ThemeProvider>
     </>
   );
