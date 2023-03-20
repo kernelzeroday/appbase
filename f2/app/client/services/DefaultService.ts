@@ -148,11 +148,25 @@ export class DefaultService {
      * @returns TimesheetResponseModel Successful Response
      * @throws ApiError
      */
-    // public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<TimesheetResponseModel>> {
-    public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<any>> {
+    public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<TimesheetResponseModel>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/timecard',
+        });
+    }
+
+    /**
+     * Get Timecard Download Api
+     * This timecard API allows you to download user time data to disk.
+     * @returns AdminTimesheetResponseModelAllUsers Successful Response
+     * @throws ApiError  
+     */
+    public static getAdminAllTimecardApiV1TimecardGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/timecard/download',           errors: {
+                422: `Validation Error`,
+            },
         });
     }
 

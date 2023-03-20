@@ -4,21 +4,23 @@ from database.query import query_get, query_put, query_update
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import StreamingResponse
+
+
 #from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel,  TimesheetResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminRoleResponseModel, AdminTimesheetResponseModelAllUsers, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout, get_user_timesheet_by_email
 from user import *
 from datetime import datetime, timedelta
+from io import BytesIO
+import openpyxl
+
 
 app = FastAPI()
 
 origins = [
-    "http://royaltimeclock.com",
     "http://api.royaltimeclock.com",
     "http://api.royaltimeclock.com:8000",
+    "http://royaltimeclock.com",
     "http://royaltimeclock.com:8000",
-    "http://royaltimeclock.com:3000",
-    "http://royaltimeclock.com:3001",
-    "http://royaltimeclock.com:4000",
-    "http://royaltimeclock.com:19006"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -229,6 +231,57 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
     if (auth_handler.decode_token(token)):
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+
+# get users data from database for admin view only AdminTimesheetResponseModelAllUsers download as xlxs file
+@app.get('/v1/admin/timecard/download', response_model=list[AdminTimesheetResponseModelAllUsers])
+def get_timecard_download_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This TimeCard Download API allow you to fetch specific user data.
+    """
+    """
+    This timecard API allow you to fetch specific user data.
+    """
+    token = credentials.credentials
+
+    #decode user from token
+    admin = auth_handler.decode_token(token)
+    
+    #print the user to the console
+    print("Logged in as: " + admin)
+
+    # get admin data from database
+    user = admin_get_all_users_timesheet_download(admin)
+
+    #print the user to the console
+    print(user)
+
+    # create a new Excel workbook and add the data to it
+    workbook = openpyxl.load_workbook('existing_workbook.xlsx')
+    worksheet = workbook.active
+    # Read the existing column headings and store them in a list
+    existing_headings = []
+    for cell in worksheet[1]:
+        existing_headings.append(cell.value)
+
+    # Add the new data to the worksheet
+    for row_num, data in enumerate(user, start=2):  # start from row 2, since row 1 has the headings
+        for col_num, heading in enumerate(existing_headings, start=4):  # start from column 1
+            worksheet.cell(row=row_num, column=col_num, value=data.get(heading))
+
+    # save the workbook to a BytesIO object
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # create filename with current date
+    filename = datetime.now().strftime("%Y-%m-%d") + ".xlsx"
+
+    # return the workbook as a downloadable Excel file with the current date as filename
+    response = StreamingResponse(stream, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
 
 # create users to 'user' table AdminUserUpdateRequestModel for admin view only
 @app.post('/v1/admin/user/create', response_model=AdminUserUpdateRequestModel)
