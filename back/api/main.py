@@ -17,10 +17,8 @@ import openpyxl
 app = FastAPI()
 
 origins = [
-    "http://api.royaltimeclock.com",
-    "http://api.royaltimeclock.com:8000",
-    "http://royaltimeclock.com",
-    "http://royaltimeclock.com:8000",
+    "http://localhost",
+    "http://localhost:8000",
 ]
 app.add_middleware(
     CORSMiddleware,

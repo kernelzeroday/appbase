@@ -156,21 +156,6 @@ export class DefaultService {
     }
 
     /**
-     * Get Timecard Download Api
-     * This timecard API allows you to download user time data to disk.
-     * @returns AdminTimesheetResponseModelAllUsers Successful Response
-     * @throws ApiError  
-     */
-    public static getAdminAllTimecardApiV1TimecardGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/v1/admin/timecard/download',           errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-
-    /**
      * Admin Signup Api
      * This admin sign-up API allow you to register your account, and return access token.
      * @param requestBody
@@ -222,6 +207,19 @@ export class DefaultService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/admin/timecard',
+        });
+    }
+
+    /**
+     * Get Timecard Download Api
+     * This TimeCard Download API allow you to fetch specific user data.
+     * @returns AdminTimesheetResponseModelAllUsers Successful Response
+     * @throws ApiError
+     */
+    public static getTimecardDownloadApiV1AdminTimecardDownloadGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/timecard/download',
         });
     }
 
