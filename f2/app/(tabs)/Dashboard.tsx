@@ -19,7 +19,7 @@ import type { TimesheetResponseModel } from '../client/models/TimesheetResponseM
 import { DefaultService } from "../client";
 
 
-let initData = [
+const initData = [
   {
     user_id: 1,
     first_name: "John",
@@ -167,7 +167,7 @@ const TableComponent = () => {
     "Month Total",
   ];
 
-  let tableData = useMemo(() => makeTableData(timecardData), [timecardData]);
+  const tableData = useMemo(() => makeTableData(timecardData), [timecardData]);
 
   return (
     <Table style={styles.table}>

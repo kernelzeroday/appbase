@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Container,
@@ -17,28 +17,25 @@ import { AppContext } from "../_layout";
 import { DefaultService } from "../client";
 
 const SignInScreen = () => {
-  const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   
+  const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState(""); 
+
   const linkTo = useLinkTo();
 
   const handleSignIn = async () => {
     const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
     OpenAPI.TOKEN = res.token?.access_token;
-    if (res.token?.access_token) {
-      linkTo('/Dashboard');
-    }
     setEmail("");
     setPassword("");
     setIsUser(true);
+    if (res.token?.access_token) {
+      linkTo('/Dashboard');
+    }
+
     // TODO error handling
-
-    // navigate to signin landing page - store token in state if not error
-
-    //   /Dashboard
-    // TODO: implement sign in logic
-
   };
 
   return (

@@ -3,7 +3,7 @@ import { Link, Tabs } from "expo-router";
 import { Pressable, useColorScheme } from "react-native";
 
 import Colors from "../../constants/Colors";
-import React, { useState } from "react";
+import React from "react";
 
 import {AppContext} from "../_layout"
 
@@ -18,15 +18,14 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
-const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
-
-
-// const [isUser, setIsUser] = React.useState(false);
-// const [isAdmin, setIsAdmin] = React.useState(false);
 
 export default function TabLayout() {
+
+  const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
+
   const colorScheme = useColorScheme();
 
+  console.log(isUser);
   return (
     <Tabs
       screenOptions={{

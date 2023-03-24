@@ -45,21 +45,21 @@ export default function RootLayout() {
   );
 }
 
-const [isUser, setIsUser] = React.useState(false);
-const [isAdmin, setIsAdmin] = React.useState(false);
-
 
 function RootLayoutNav() {
+  const [isUser, setIsUser] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
   const colorScheme = useColorScheme();
 
   return (
     <>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AppContext.Provider value={{
-      isUser: isUser,
-      setIsUser: setIsUser,
-      isAdmin: isAdmin,
-      setIsAdmin: setIsAdmin}}>
+          isUser: isUser,
+          setIsUser: setIsUser,
+          isAdmin: isAdmin,
+          setIsAdmin: setIsAdmin}}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
