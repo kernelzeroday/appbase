@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
-
+from fastapi.responses import FileResponse
 
 #from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel,  TimesheetResponseModel, AdminSignUpRequestModel, AdminSignInRequestModel, AdminResponseModel, AdminRoleResponseModel, AdminTimesheetResponseModelAllUsers, register_user, signin_user, update_user, get_all_users, get_user_by_id, save_user_time_by_email_clockin, save_user_time_by_email_clockout, get_user_timesheet_by_email
 from user import *
@@ -233,11 +233,9 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
 # get users data from database for admin view only AdminTimesheetResponseModelAllUsers download as xlxs file
 @app.get('/v1/admin/timecard/download', response_model=list[AdminTimesheetResponseModelAllUsers])
 def get_timecard_download_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+
     """
-    This TimeCard Download API allow you to fetch specific user data.
-    """
-    """
-    This timecard API allow you to fetch specific user data.
+    This timecard API allow you to fetch a report of user time data
     """
     token = credentials.credentials
 
@@ -253,31 +251,12 @@ def get_timecard_download_api(credentials: HTTPAuthorizationCredentials = Securi
     #print the user to the console
     print(user)
 
-    # create a new Excel workbook and add the data to it
-    workbook = openpyxl.load_workbook('existing_workbook.xlsx')
-    worksheet = workbook.active
-    # Read the existing column headings and store them in a list
-    existing_headings = []
-    for cell in worksheet[1]:
-        existing_headings.append(cell.value)
+    file_name = admin_create_excel(user)
 
-    # Add the new data to the worksheet
-    for row_num, data in enumerate(user, start=2):  # start from row 2, since row 1 has the headings
-        for col_num, heading in enumerate(existing_headings, start=4):  # start from column 1
-            worksheet.cell(row=row_num, column=col_num, value=data.get(heading))
+    if (auth_handler.decode_token(token)):
+        return FileResponse(file_name, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
-    # save the workbook to a BytesIO object
-    stream = BytesIO()
-    workbook.save(stream)
-    stream.seek(0)
-
-    # create filename with current date
-    filename = datetime.now().strftime("%Y-%m-%d") + ".xlsx"
-
-    # return the workbook as a downloadable Excel file with the current date as filename
-    response = StreamingResponse(stream, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
 
 
 

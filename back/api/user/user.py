@@ -6,11 +6,11 @@ from .models import *
 from datetime import timedelta, datetime
 
 from collections import defaultdict
-import math
-from math import ceil
-import calendar
 from typing import List, Dict
 
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import Font
 
 import pytz
 auth_handler = Auth()
@@ -554,7 +554,7 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
 
     return fix_output(sorted_results)
 
-'''
+
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers and download as xlsx file
 def admin_get_all_users_timesheet_download(admin: str) -> List[dict]:
 
@@ -608,4 +608,115 @@ def admin_get_all_users_timesheet_download(admin: str) -> List[dict]:
 
     return fix_output(sorted_results)
 
-'''
+# function that creates an excel file based off data from admin_get_all_users_timesheet_download
+def admin_create_excel(data):
+    try:
+        day_names = {
+            "Monday": "Mon",
+            "Tuesday": "Tue",
+            "Wednesday": "Wed",
+            "Thursday": "Thu",
+            "Friday": "Fri"
+        }
+        
+        table_data = {
+            "sales team member": [],
+            "total for week": []
+        }
+        
+        for header in day_names.values():
+            table_data[f"{header} in"] = []
+            table_data[f"{header} out"] = []
+            table_data[f"{header} total"] = []
+
+        for user in data:
+            sales_team_member = user['first_name'] + ' ' + user['last_name']
+            if sales_team_member not in table_data['sales team member']:
+                table_data['sales team member'].append(sales_team_member)
+                table_data['total for week'].append(0)  # initialize to 0
+
+                for header in day_names.values():
+                    table_data[f"{header} in"].append(None)
+                    table_data[f"{header} out"].append(None)
+                    table_data[f"{header} total"].append(None)
+
+            try:
+                current_day_of_week = datetime.strptime(user['date'], '%Y-%m-%d').strftime('%A')
+                index = table_data['sales team member'].index(sales_team_member)
+
+                if current_day_of_week in day_names.keys():
+                    header = day_names[current_day_of_week]
+                    in_time = datetime.strptime(user['clock_in_times'][0], '%H:%M:%S').strftime('%I:%M:%S %p')
+                    out_time = datetime.strptime(user['clock_out_times'][0], '%H:%M:%S').strftime('%I:%M:%S %p')
+                    total_hours = user['total_hours'] - 0.5  # subtract 30 minutes
+                    table_data[f"{header} in"][index] = in_time
+                    table_data[f"{header} out"][index] = out_time
+                    table_data[f"{header} total"][index] = total_hours
+
+                    # Update the total for week
+                    table_data['total for week'][index] += total_hours
+
+            except Exception as e:
+                print(f"Error parsing date {user['date']}: {e}")
+
+        # Create the DataFrame
+        df = pd.DataFrame(table_data)
+
+        # Reorder the columns to move 'total for week' to the end
+        columns = ['sales team member']
+        for header in day_names.values():
+            columns += [f"{header} in", f"{header} out", f"{header} total"]
+        columns += ['total for week']
+        df = df[columns]
+
+        # Save the DataFrame as an Excel workbook
+
+        # Get the current date
+        current_date = datetime.now()
+
+        # Create a file name using the current date
+        file_name = f"{current_date:%Y-%m-%d}.xlsx"
+
+        print(file_name)
+        writer = pd.ExcelWriter(file_name)
+        df.to_excel(writer, index=False)
+        writer.save()
+
+        # Set the font styles
+        header_font = Font(name='Cambria', bold=True)
+        body_font = Font(name='Cambria')
+
+        # Open the workbook and set the column width for the 'sales team member' column
+        wb = load_workbook(file_name)
+        ws = wb.active
+
+        # Set the font for the first row to Cambria
+        for cell in ws[1]:
+            cell.font = header_font
+
+        ws.column_dimensions['A'].width = 25
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 15
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 15
+        ws.column_dimensions['F'].width = 15
+        ws.column_dimensions['G'].width = 15
+        ws.column_dimensions['H'].width = 15
+        ws.column_dimensions['I'].width = 15
+        ws.column_dimensions['J'].width = 15
+        ws.column_dimensions['K'].width = 15
+        ws.column_dimensions['L'].width = 15
+        ws.column_dimensions['M'].width = 15
+        ws.column_dimensions['N'].width = 15
+        ws.column_dimensions['O'].width = 15
+        ws.column_dimensions['P'].width = 15
+        ws.column_dimensions['Q'].width = 15
+
+        
+
+        # Save the updated workbook
+        wb.save(file_name)
+        
+        return file_name
+    except Exception as e:
+        print(f"Error creating excel file: {e}")
