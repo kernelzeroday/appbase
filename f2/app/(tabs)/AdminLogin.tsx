@@ -30,7 +30,7 @@ const SignInScreen = () => {
     OpenAPI.TOKEN = res.token?.access_token;
     setEmail("");
     setPassword("");
-    setIsUser(true);
+    setIsAdmin(true);
     if (res.token?.access_token) {
       linkTo('/AdminTimeDash');
     }

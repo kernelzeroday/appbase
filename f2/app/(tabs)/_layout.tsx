@@ -61,7 +61,7 @@ export default function TabLayout() {
       {/* tab two */}
       <Tabs.Screen
         name="Dashboard"
-        options={isUser !== null && isUser ? {
+        options={{
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -70,8 +70,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
-        }
-        : { href: null }}
+        }}
       />
       {/* punch tab */}
       <Tabs.Screen
