@@ -170,7 +170,7 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
     #print the user to the console
     print(user)
 
-    user = { 'clock_times': user }
+    user = { 'response': user }
 
     if (auth_handler.decode_token(token)):
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
