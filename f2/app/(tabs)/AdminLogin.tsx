@@ -26,13 +26,13 @@ const SignInScreen = () => {
   const linkTo = useLinkTo();
 
   const handleSignIn = async () => {
-    const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+    const res = await DefaultService.AdminsigninApiV1SigninPost({admin_email: email, admin_password: password});
     OpenAPI.TOKEN = res.token?.access_token;
     setEmail("");
     setPassword("");
     setIsUser(true);
     if (res.token?.access_token) {
-      linkTo('/Dashboard');
+      linkTo('/AdminTimeDash');
     }
 
     // TODO error handling
@@ -59,7 +59,7 @@ const SignInScreen = () => {
         </View>
 
         {/* Login Section */}
-        <Text style={styles.title}>Royal Time Portal Login</Text>
+        <Text style={styles.title}>Royal Admin Time Portal Login</Text>
         {/* test button */}
         {/* <Button title="Test" onPress={ClientTestFunc} />  */}
 

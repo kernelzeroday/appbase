@@ -4,7 +4,6 @@ import { Pressable, useColorScheme } from "react-native";
 
 import Colors from "../../constants/Colors";
 import React from "react";
-
 import {AppContext} from "../_layout"
 
 
@@ -207,26 +206,26 @@ export default function TabLayout() {
         }
         : { href: null }}
       />
-      {/* admin time dashboard */}
+      {/* Admin Time Dashboard */}
       <Tabs.Screen
         name="AdminTimeDash"
         options={{
-          title: "Admin Time Dashboard",
+          title: "Admin Dashboard",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              // admin time dashboard icon
-              name="dashboard"
+              // login icon
+              name="user-circle"
               color={color}
             />
           ),
         }}
       />
       
-      {/* login2 */}
+      {/* Admin Login */}
       <Tabs.Screen
-        name="login2"
+        name="AdminLogin"
         options={{
-          title: "Login2",
+          title: "Admin Login",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
               // login icon

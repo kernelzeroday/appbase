@@ -124,3 +124,12 @@ class AdminUserUpdateRequestModel(BaseModel):
     user_first_name: str
     user_last_name: str
     user_timezone: str
+
+# this class is admin file response model, used to return a list of files to the admin user.
+class AdminFileResponseModel(BaseModel):
+    files: List[str] = []
+
+# this class is admin file download response model, used to return a file avaiable to download to the admin user.
+class AdminFileDownloadResponseModel(BaseModel):
+    file: str
+    
