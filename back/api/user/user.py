@@ -11,8 +11,12 @@ from typing import List, Dict
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import Font
-
+import os
 import pytz
+
+# Set the download directory
+DOWNLOAD_DIR = "./downloads/"
+
 auth_handler = Auth()
 
 ###################################################################################################
@@ -675,10 +679,14 @@ def admin_create_excel(data):
         current_date = datetime.now()
 
         # Create a file name using the current date
+        current_date = datetime.now()
         file_name = f"{current_date:%Y-%m-%d}.xlsx"
 
-        print(file_name)
-        writer = pd.ExcelWriter(file_name)
+        # Construct the full file path using the download directory and file name
+        file_path = os.path.join(DOWNLOAD_DIR, file_name)
+
+        # Save the DataFrame to the Excel file
+        writer = pd.ExcelWriter(file_path)
         df.to_excel(writer, index=False)
         writer.save()
 
@@ -687,7 +695,7 @@ def admin_create_excel(data):
         body_font = Font(name='Cambria')
 
         # Open the workbook and set the column width for the 'sales team member' column
-        wb = load_workbook(file_name)
+        wb = load_workbook(file_path)
         ws = wb.active
 
         # Set the font for the first row to Cambria

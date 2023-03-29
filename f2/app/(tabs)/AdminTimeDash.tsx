@@ -1,84 +1,130 @@
 import { StyleSheet } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
-import { Button, Container, Icon, NativeBaseProvider } from "native-base";
-
-import EditScreenInfo from "../../components/EditScreenInfo";
-import { Text, View } from "../../components/Themed";
-import React from "react";
+import {
+  Button,
+  Container,
+  Icon,
+  NativeBaseProvider,
+  Text,
+  View,
+} from "native-base";
+import React, { useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { OpenAPI } from '../client/core/OpenAPI';
 
+import { useFocusEffect } from '@react-navigation/native';
+
+import type { AdminTimesheetResponseModelAllUsers } from '../client/models/AdminTimesheetResponseModelAllUsers';
 import { DefaultService } from "../client";
 
-import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+const TableComponent = () => {
+  const [timecardData, setTimecardData] = useState<AdminTimesheetResponseModelAllUsers>([]);
 
-export default function AdminTimeScreen() {
-  const handleTimeSheetDownload = async () => {
-    try {
-      const res = await DefaultService.getAdminAllTimecardApiV1TimecardGet();
-      
-      const date = new Date().toISOString().split('T')[0];
-      const fileName = `timesheet_${date}.xlsx`;
-      
-      const fileUri = FileSystem.documentDirectory + fileName;
-      await FileSystem.writeAsStringAsync(fileUri, res.data, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      await FileSystem.getContentUriAsync(fileUri).then((contentUri) => {
-        Sharing.shareAsync(contentUri);
-      });
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    retrieveData();
+  }, []);
+
+  const retrieveData = async () => {
+    const res = await DefaultService.getTimecardApiV1AdminTimecardGet();
+    if (res && res.response) {
+      setTimecardData(res.response as AdminTimesheetResponseModelAllUsers[]);
     }
   };
 
+  
+  const makeTableData = (data) => {
+    // group timecard data by user and date
+    const groupedData = data.reduce((acc, curr) => {
+      const key = curr.user_id + '-' + curr.first_name + '-' + curr.last_name;
+      if (!acc[key]) {
+        acc[key] = {
+          user_id: curr.user_id,
+          name: curr.first_name + ' ' + curr.last_name,
+          data: {}
+        };
+      }
+      if (!acc[key].data[curr.date]) {
+        acc[key].data[curr.date] = {
+          clock_in_times: [],
+          clock_out_times: [],
+          total_hours: 0
+        };
+      }
+      acc[key].data[curr.date].clock_in_times.push(...curr.clock_in_times);
+      acc[key].data[curr.date].clock_out_times.push(...curr.clock_out_times);
+      acc[key].data[curr.date].total_hours += curr.total_hours;
+      return acc;
+    }, {});
+  
+    // get all unique dates from the timecard data and sort them in ascending order
+    const dates = Object.values(groupedData)
+      .flatMap(user => Object.keys(user.data))
+      .filter((date, i, arr) => arr.indexOf(date) === i)
+      .sort();
+  
+    // create a new array with one element for each user and their timecard data for each date
+    const tableData = [];
+    Object.values(groupedData).forEach((user) => {
+      const userRowData = [user.name];
+      const rowData = [];
+      dates.forEach((date) => {
+        const timecard = user.data[date];
+        if (timecard) {
+          timecard.clock_in_times.forEach((time, i) => {
+            rowData.push(
+              "",
+              time,
+              timecard.clock_out_times[i],
+              timecard.total_hours
+            );
+          });
+        } else {
+          rowData.push("", "", "", "");
+        }
+      });
+      tableData.push([...userRowData, ...rowData]);
+    });
+  
+    // add the table head
+    const tableHead = [
+      "Name",
+      ...dates.flatMap(date => ["", new Date(date).toDateString(), "", "Total Hours"]),
+    ];
+  
+    return { tableHead, tableData };
+  };
+  
+
+  
+  const { tableHead, tableData } = makeTableData(timecardData);
+
+  return (
+    <View style={styles.table}>
+      <Table borderStyle={{ borderWidth: 20, borderColor: "white" }}>
+        <Row
+          data={tableHead}
+          style={styles.head}
+          textStyle={styles.headText}
+        />
+        <Rows
+          data={tableData}
+          textStyle={styles.text}
+        />
+      </Table>
+    </View>
+  );
+};
+
+export default function TimecardScreen() {
   return (
     <NativeBaseProvider>
-      <View style={styles.container}>
-        {/* Title */}
-        <Text style={styles.title}>
-          {/* time icon */}
-          <Icon
-            as={<Ionicons name="time-outline" />}
-            size="lg"
-            color="blue.500"
-            style={{ marginBottom: 10 }}
-          />
-          {/* seperate */}
-          
-          TimeSheet View</Text>
-        {/* Separator */}
-        <View
-          style={styles.separator} 
-        />
-        {/* set up table boundry */}
-        <View style={{ width: "85%" }}>
-          {/* Punch in button on left and punch out button on the right, both large */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-            <Button
-              style={{ width: "45%", height: 100 }}
-              onPress={handleTimeSheetDownload}
-            >
-              <Text style={{ fontSize: 20 }}>
-                {/* card icon */}
-                <Icon
-                  as={<Ionicons name="time-outline" />}
-                  size="lg"
-                  color="blue.500"
-                  style={{ marginBottom: 10 }}
-                />
-                {/* seperate */}
-                <Text style={{ marginLeft: 10 }}>
-                Download</Text>
-              </Text>
-            </Button>
-            </View>
-              
-        </View>
-      </View>
+      <Container>
+        <TableComponent />
+      </Container>
     </NativeBaseProvider>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -99,11 +145,21 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "#f1f8ff",
   },
+  headText: {
+    height: 40,
+    backgroundColor: "#f1f8ff",
+    color: "black",
+  },
   text: {
     margin: 6,
     textAlign: "center",
+    backgroundColor: "#f1f8ff",
+    color: "white",
   },
   row: {
     height: 60,
+    backgroundColor: "#f1f8ff",
   },
+  table: { flex: 1, marginTop: 20 },
+  cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
 });
