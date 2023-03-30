@@ -14,6 +14,7 @@ import { OpenAPI } from '../client/core/OpenAPI';
 
 import { useFocusEffect } from '@react-navigation/native';
 
+import type { AdminFileDownloadResponseModel } from '../client/models/AdminFileDownloadResponseModel';
 import type { AdminTimesheetResponseModelAllUsers } from '../client/models/AdminTimesheetResponseModelAllUsers';
 import { DefaultService } from "../client";
 
@@ -31,7 +32,6 @@ const TableComponent = () => {
     }
   };
 
-  
   const makeTableData = (data) => {
     // group timecard data by user and date
     const groupedData = data.reduce((acc, curr) => {
@@ -55,13 +55,13 @@ const TableComponent = () => {
       acc[key].data[curr.date].total_hours += curr.total_hours;
       return acc;
     }, {});
-  
+
     // get all unique dates from the timecard data and sort them in ascending order
     const dates = Object.values(groupedData)
       .flatMap(user => Object.keys(user.data))
       .filter((date, i, arr) => arr.indexOf(date) === i)
       .sort();
-  
+
     // create a new array with one element for each user and their timecard data for each date
     const tableData = [];
     Object.values(groupedData).forEach((user) => {
@@ -84,82 +84,106 @@ const TableComponent = () => {
       });
       tableData.push([...userRowData, ...rowData]);
     });
-  
+
     // add the table head
     const tableHead = [
       "Name",
       ...dates.flatMap(date => ["", new Date(date).toDateString(), "", "Total Hours"]),
     ];
-  
+
     return { tableHead, tableData };
   };
+
+// this function is called when the download button is clicked and it will download the timecard data as an excel file
+// its a work in progress and needs to be refactored
+
+  const downloadFile = async () => {
+    const token = JSON.parse(sessionStorage.getItem('token')); // Retrieve access_token from session
+    console.log('token', token);
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
+    const response = await fetch('http://localhost:8000/v1/admin/timecard/download', { headers }); // Use fetch to call the API with the token
+    const blob = await response.blob(); // Create a Blob from the API response
+    const url = window.URL.createObjectURL(blob);
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in ISO format (e.g. "2023-03-30")
+    const fileName = `${currentDate}.xlsx`; // Set file name to current date + ".xlsx"
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+  };
+  
   
 
-  
-  const { tableHead, tableData } = makeTableData(timecardData);
 
-  return (
-    <View style={styles.table}>
-      <Table borderStyle={{ borderWidth: 20, borderColor: "white" }}>
-        <Row
-          data={tableHead}
-          style={styles.head}
-          textStyle={styles.headText}
-        />
-        <Rows
-          data={tableData}
-          textStyle={styles.text}
-        />
-      </Table>
-    </View>
-  );
+const { tableHead, tableData } = makeTableData(timecardData);
+
+return (
+<View style={styles.table}>
+<Table borderStyle={{ borderWidth: 20, borderColor: "white" }}>
+<Row
+       data={tableHead}
+       style={styles.head}
+       textStyle={styles.headText}
+     />
+<Rows
+       data={tableData}
+       textStyle={styles.text}
+     />
+</Table>
+<Button onPress={downloadFile}>
+Download Timecard
+</Button>
+</View>
+);
 };
 
 export default function TimecardScreen() {
   return (
-    <NativeBaseProvider>
-      <Container>
-        <TableComponent />
+  <NativeBaseProvider>
+    <Container>
+      <TableComponent />
       </Container>
-    </NativeBaseProvider>
-  );
-}
-
+      </NativeBaseProvider>
+      );
+    }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-  head: {
-    height: 40,
-    backgroundColor: "#f1f8ff",
-  },
-  headText: {
-    height: 40,
-    backgroundColor: "#f1f8ff",
-    color: "black",
-  },
-  text: {
-    margin: 6,
-    textAlign: "center",
-    backgroundColor: "#f1f8ff",
-    color: "white",
-  },
-  row: {
-    height: 60,
-    backgroundColor: "#f1f8ff",
-  },
-  table: { flex: 1, marginTop: 20 },
-  cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
+container: {
+flex: 1,
+alignItems: "center",
+justifyContent: "center",
+},
+title: {
+fontSize: 20,
+fontWeight: "bold",
+},
+separator: {
+marginVertical: 30,
+height: 1,
+width: "80%",
+},
+head: {
+height: 40,
+backgroundColor: "#f1f8ff",
+},
+headText: {
+height: 40,
+backgroundColor: "#f1f8ff",
+color: "black",
+},
+text: {
+margin: 6,
+textAlign: "center",
+backgroundColor: "#f1f8ff",
+color: "white",
+},
+row: {
+height: 60,
+backgroundColor: "#f1f8ff",
+},
+table: { flex: 1, marginTop: 20 },
+cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
 });
