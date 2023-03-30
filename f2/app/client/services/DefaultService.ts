@@ -215,10 +215,10 @@ export class DefaultService {
     /**
      * Get Timecard Download Api
      * This timecard API allow you to fetch a report of user time data
-     * @returns AdminTimesheetResponseModelAllUsers Successful Response
+     * @returns AdminFileDownloadResponseModel Successful Response
      * @throws ApiError
      */
-    public static getTimecardDownloadApiV1AdminTimecardDownloadGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
+    public static getTimecardDownloadApiV1AdminTimecardDownloadGet(): CancelablePromise<Array<AdminFileDownloadResponseModel>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/admin/timecard/download',
