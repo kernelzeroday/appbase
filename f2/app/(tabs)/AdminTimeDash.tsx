@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import {
   Button,
@@ -121,22 +121,22 @@ const TableComponent = () => {
 const { tableHead, tableData } = makeTableData(timecardData);
 
 return (
-<View style={styles.table}>
-<Table borderStyle={{ borderWidth: 20, borderColor: "white" }}>
-<Row
-       data={tableHead}
-       style={styles.head}
-       textStyle={styles.headText}
-     />
-<Rows
-       data={tableData}
-       textStyle={styles.text}
-     />
-</Table>
-<Button onPress={downloadFile}>
-Download Timecard
-</Button>
-</View>
+  <View style={styles.table}>
+    <Table borderStyle={{ borderWidth: 1, borderColor: "white" }}>
+      <Row
+        data={tableHead}
+        style={styles.head}
+        textStyle={styles.headText}
+      />
+      <Rows
+        data={tableData}
+        textStyle={styles.text}
+      />
+    </Table>
+    <Button onPress={downloadFile} style={styles.button}>
+      Download Timecard
+    </Button>
+  </View>
 );
 };
 
@@ -151,10 +151,18 @@ export default function TimecardScreen() {
     }
 
 const styles = StyleSheet.create({
+button: {
+  backgroundColor: "green",
+  color: "white",
+  height: 50,
+  justifyContent: "center",
+  borderRadius: 10,
+},
 container: {
 flex: 1,
 alignItems: "center",
 justifyContent: "center",
+backgroundColor: "orange",
 },
 title: {
 fontSize: 20,
@@ -162,28 +170,34 @@ fontWeight: "bold",
 },
 separator: {
 marginVertical: 30,
-height: 1,
-width: "80%",
+height: 100,
 },
 head: {
-height: 40,
-backgroundColor: "#f1f8ff",
+height: 85,
+backgroundColor: "#595959",
 },
 headText: {
 height: 40,
-backgroundColor: "#f1f8ff",
-color: "black",
+color: "white",
 },
 text: {
 margin: 6,
-textAlign: "center",
-backgroundColor: "#f1f8ff",
+backgroundColor: "green",
 color: "white",
 },
 row: {
 height: 60,
-backgroundColor: "#f1f8ff",
+backgroundColor: "blue",
 },
-table: { flex: 1, marginTop: 20 },
-cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
+table: {
+  flex: 1,
+  marginTop: 20,
+  marginBottom: 20,
+  marginLeft: 200,
+  marginRight: 0,
+  backgroundColor: "#808080",
+  width: "100%",
+  justifyContent: 'center',
+},
+cell: { width: 20, height: 40, backgroundColor: "red" },
 });

@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    backgroundColor: "#fff",
+    backgroundColor: "gray",
   },
   infoContainer: {
     width: "100%",
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     marginBottom: 10,
+    backgroundColor: "gray",
   },
   padding: {
     height: 10,

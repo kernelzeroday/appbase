@@ -59,7 +59,7 @@ const SignInScreen = () => {
         </View>
 
         {/* Login Section */}
-        <Text style={styles.title}>Royal Time Portal Login</Text>
+        <Text style={styles.title}>Royal Time Portal - User Login</Text>
         {/* test button */}
         {/* <Button title="Test" onPress={ClientTestFunc} />  */}
 
@@ -67,13 +67,13 @@ const SignInScreen = () => {
         <View style={{ width: "70%" }}>
           {/* medium text */}
           {/* center it */}
-          <Text style={{ fontSize: 15, textAlign: "center", color: "#eee" }}>
+          <Text style={{ fontSize: 15, textAlign: "center", color: "#eee", marginBottom: 30 }}>
             Please enter your login credentials below to access the Royal
             Time Portal.
           </Text>
         </View>
         {/* spacer */}
-        <View style={{ height: 10 }} />
+        <View style={{ height: 10 , marginBottom: 30}}>
         <Input
           placeholder="Email"
           value={email}
@@ -81,6 +81,8 @@ const SignInScreen = () => {
           style={styles.input}
           keyboardType="email-address"
         />
+        </View>
+        <View style={{ height: 10 }}>
         <Input
           placeholder="Password"
           value={password}
@@ -88,6 +90,7 @@ const SignInScreen = () => {
           style={styles.input}
           secureTextEntry
         />
+        </View>
         <Button onPress={handleSignIn} style={styles.button}>
           <Text>Sign In</Text>
         </Button>
@@ -127,14 +130,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#000000" ,
+    color: "white" ,
   },
   input: {
-    marginBottom: 10,
-    color: "#000000" ,
+    color: "white" ,
+    backgroundColor: "gray",
+    overflow: "hidden",
+    borderRadius: 0,
+    borderWidth: 0,
   },
   button: {
-    marginTop: 20,
+    marginTop: 30,
   },
 });
 
