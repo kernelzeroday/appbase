@@ -24,12 +24,18 @@ export default function TabLayout() {
 
   const colorScheme = useColorScheme();
 
+  const activeTintColor = colorScheme === "dark" ? "black" : "black";
+  const inactiveTintColor = colorScheme === "dark" ? "white" : "gray";
+  const backgroundColor = colorScheme === "dark" ? "gray" : "gray";
+
   console.log(isUser);
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-      }}
+    screenOptions={{
+      tabBarActiveTintColor: activeTintColor,
+      tabBarInactiveTintColor: inactiveTintColor,
+      tabBarStyle: { backgroundColor: backgroundColor },
+    }}
     >
       <Tabs.Screen
         name="index"
@@ -74,7 +80,7 @@ export default function TabLayout() {
       />
       {/* punch tab */}
       <Tabs.Screen
-        name="punch"
+        name="Punch"
         options={isUser !== null && isUser ? {
           title: "Punch",
           tabBarIcon: ({ color }) => (
@@ -89,7 +95,7 @@ export default function TabLayout() {
       />
       {/* account tab */}
       <Tabs.Screen
-        name="account"
+        name="Account"
         options={isUser !== null && isUser ? {
           title: "Account",
           tabBarIcon: ({ color }) => (
@@ -134,7 +140,7 @@ export default function TabLayout() {
       />
       {/* about */}
       <Tabs.Screen 
-        name="about"
+        name="About"
         options={{
           title: "About",
           tabBarIcon: ({ color }) => (
@@ -164,7 +170,7 @@ export default function TabLayout() {
       />
       {/* contact */}
       <Tabs.Screen
-        name="contact"
+        name="Contact"
         options={{
           title: "Contact",
           tabBarIcon: ({ color }) => (
@@ -178,7 +184,7 @@ export default function TabLayout() {
       />
       {/* helpticket */}
       <Tabs.Screen
-        name="helpticket"
+        name="HelpTicket"
         options={{
           title: "Help Ticket",
           tabBarIcon: ({ color }) => (
@@ -236,7 +242,7 @@ export default function TabLayout() {
       />
       {/* report */}
       <Tabs.Screen
-        name="report"
+        name="Report"
         options={isAdmin ? {
           title: "Report",
           tabBarIcon: ({ color }) => (

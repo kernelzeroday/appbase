@@ -467,15 +467,18 @@ def admin_update_user_password(admin: str, user: AdminUserUpdateRequestModel):
     user = get_user_by_email(user.user_email)
     return user[0]
 
-
-# this function is to sort the data from admin_get_all_users_timesheet
+# function to sort user time data so it can be used by the api
 def fix_output(data):
     transformed_data = []
     for item in data:
         user_id = item['user_id']
         date = item['date']
-        clock_in_time = str(datetime.min + item['clock_in_time']).split()[1]
-        clock_out_time = str(datetime.min + item['clock_out_time']).split()[1]
+        clock_in_time = datetime.min + item['clock_in_time']
+        clock_out_time = datetime.min + item['clock_out_time']
+
+        # Convert to 12-hour format with AM/PM indicator
+        clock_in_time = clock_in_time.strftime("%I:%M %p")
+        clock_out_time = clock_out_time.strftime("%I:%M %p")
 
         existing_item = next((x for x in transformed_data if x['user_id'] == user_id and x['date'] == str(date)), None)
         if existing_item:
@@ -496,7 +499,7 @@ def fix_output(data):
 
     for item in transformed_data:
         # Calculate total hours
-        total_seconds = sum([(datetime.strptime(out, '%H:%M:%S') - datetime.strptime(inp, '%H:%M:%S')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
+        total_seconds = sum([(datetime.strptime(out, '%I:%M %p') - datetime.strptime(inp, '%I:%M %p')).total_seconds() for inp, out in zip(item['clock_in_times'], item['clock_out_times'])])
         item['total_hours'] = round(total_seconds / 3600, 1)
 
         # Calculate week total hours
@@ -560,14 +563,14 @@ def admin_get_all_users_timesheet(admin: str) -> List[dict]:
 
 
 # admin function to get all users' time records using AdminTimesheetResponseModelAllUsers and download as xlsx file
-def admin_get_all_users_timesheet_download(admin: str) -> List[dict]:
+def admin_get_all_users_timesheet_download() -> List[dict]:
 
-    admin = admin_get_role(admin)
+    #admin = admin_get_role(admin)
 
-    print(admin)
+    #print(admin)
     # if admin is not an admin, return an error message
-    if admin != 'admin':
-        return "Error: You do not have permission to view this page."
+    #if admin != 'admin':
+    #    return "Error: You do not have permission to view this page."
     
 
 
@@ -688,7 +691,7 @@ def admin_create_excel(data):
         # Save the DataFrame to the Excel file
         writer = pd.ExcelWriter(file_path)
         df.to_excel(writer, index=False)
-        writer.save()
+        writer.close()
 
         # Set the font styles
         header_font = Font(name='Cambria', bold=True)
