@@ -194,7 +194,7 @@ table: {
   marginTop: 20,
   marginBottom: 20,
   marginLeft: 200,
-  marginRight: 0,
+  marginRight: 0, 
   backgroundColor: "#808080",
   width: "100%",
   justifyContent: 'center',

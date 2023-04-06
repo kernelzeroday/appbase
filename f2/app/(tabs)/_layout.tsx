@@ -26,7 +26,7 @@ export default function TabLayout() {
 
   const activeTintColor = colorScheme === "dark" ? "black" : "black";
   const inactiveTintColor = colorScheme === "dark" ? "white" : "gray";
-  const backgroundColor = colorScheme === "dark" ? "gray" : "gray";
+  const backgroundColor = colorScheme === "dark" ? "#121212" : "#121212";
 
   console.log(isUser);
   return (
@@ -67,16 +67,17 @@ export default function TabLayout() {
       {/* tab two */}
       <Tabs.Screen
         name="Dashboard"
-        options={{
+        options={isUser !== null && isUser ? {
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              // dashboard icon
+              // punch icon
               name="home"
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       {/* punch tab */}
       <Tabs.Screen
@@ -111,7 +112,7 @@ export default function TabLayout() {
       {/* AdminCreateUser tab */}
       <Tabs.Screen
         name="AdminCreateUser"
-        options={isAdmin ? {
+        options={isAdmin !== null && isAdmin ? {
           title: "Create User",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -126,7 +127,7 @@ export default function TabLayout() {
       {/* AdminModifyUser tab */}
       <Tabs.Screen
         name="AdminModifyUser"
-        options={isAdmin ? {
+        options={isAdmin !== null && isAdmin ? {
           title: "Modify User",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -156,7 +157,7 @@ export default function TabLayout() {
       {/* new admin */}
       <Tabs.Screen
         name="NewAdmin"
-        options={isAdmin ? {
+        options={isAdmin !== null && isAdmin ? {
           title: "New Admin",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -199,7 +200,7 @@ export default function TabLayout() {
       {/* adminviewticket */}
       <Tabs.Screen
         name="adminviewticket"
-        options={isAdmin ? {
+        options={isAdmin !== null && isAdmin ? {
           title: "Admin View Ticket",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
@@ -214,16 +215,17 @@ export default function TabLayout() {
       {/* Admin Time Dashboard */}
       <Tabs.Screen
         name="AdminTimeDash"
-        options={{
-          title: "Admin Dashboard",
+        options={isAdmin !== null && isAdmin ? {
+          title: "Manager Dashboard",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              // login icon
-              name="user-circle"
+              // punch icon
+              name="home"
               color={color}
             />
           ),
-        }}
+        }
+        : { href: null }}
       />
       
       {/* Admin Login */}

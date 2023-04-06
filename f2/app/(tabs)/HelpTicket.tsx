@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Button, Container, Input, NativeBaseProvider, Text, TextArea, VStack } from 'native-base';
+import { Button, Container, Input, NativeBaseProvider, Text, TextArea, VStack, View } from 'native-base';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function HelpTicketScreen() {
@@ -14,14 +14,15 @@ export default function HelpTicketScreen() {
   return (
     <NativeBaseProvider>
       <Container style={styles.container}>
-        <Text style={styles.pageTitle}>Help Ticket</Text>
+      <View style={styles.header}>
+          <Text style={styles.headerText}>Application Support Request</Text>
+        </View>
 
         <VStack space={4} mt={8}>
           <Input
             placeholder="Subject"
             value={ticketSubject}
             onChangeText={setTicketSubject}
-            InputLeftElement={<FontAwesome name="tag" size={24} color="black" style={styles.icon} />}
             style={styles.input}
           />
 
@@ -46,23 +47,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: 'black',
     paddingHorizontal: 20,
+    marginLeft: 200,
   },
-  pageTitle: {
+  header: {
+    marginTop: 20,
+    width: "100%",
+    height: 100,
+    backgroundColor: "#121212",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerText: {
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 40,
     marginBottom: 20,
-    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    color: 'white',
   },
   input: {
     backgroundColor: '#f4f4f4',
-    borderRadius: 10,
     borderWidth: 0,
-  },
-  icon: {
-    marginLeft: 10,
   },
   createButton: {
     backgroundColor: '#1B4F72',
