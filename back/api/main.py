@@ -21,6 +21,14 @@ origins = [
     "http://localhost:8000",
     "http://localhost:3000",
     "http://localhost:19000",
+    "http://royaltimeclock.com",
+    "http://royaltimeclock.com:8000",
+    "http://royaltimeclock.com:3000",
+    "http://royaltimeclock.com:19000",
+    "http://api.royaltimeclock.com:8000",
+    "http://api.royaltimeclock.com:3000",
+    "http://api.royaltimeclock.com:19000",
+
 ]
 
 app.add_middleware(
