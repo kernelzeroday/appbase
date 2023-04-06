@@ -12,7 +12,7 @@ const AboutScreen = () => {
         <View style={styles.padding} />
 
         <Text style={styles.text}>
-          Welcome to the about page for the Royal Admin Time Portal Timesheet
+          Welcome to the about page for the Royal Time Clock Portal Timesheet
           Application! Our application is designed to make time management and
           employee tracking easier and more efficient than ever before. We
           understand that time is a valuable commodity, and our mission is to
@@ -33,7 +33,7 @@ const AboutScreen = () => {
         </Text>
 
         <View style={styles.padding} />
-        <Text style={styles.text}>
+        <Text style={styles.text_warning}>
           If you encounter any issues while using the Royal Admin Time Portal
           Timesheet Application, please don't hesitate to reach out to your
           direct supervisor for assistance. They will be able to provide you
@@ -52,26 +52,35 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    backgroundColor: "gray",
+    backgroundColor: "black",
   },
   infoContainer: {
-    width: "100%",
-    maxWidth: 400,
+    maxWidth: "60%",
+    backgroundColor: "black",
+    paddingHorizontal: 20,
   },
   label: {
     fontSize: 14,
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 5,
+    width: "100%",
   },
   text: {
     fontSize: 14,
     marginBottom: 10,
-    backgroundColor: "gray",
+    color: "white",
+  },
+  text_warning: {
+    fontSize: 14,
+    marginBottom: 10,
+    color: "yellow",
   },
   padding: {
     height: 10,
+    backgroundColor: "black",
   },
 });
+
 
 export default AboutScreen;

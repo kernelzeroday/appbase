@@ -39,7 +39,6 @@ const TableComponent = () => {
       if (!acc[key]) {
         acc[key] = {
           user_id: curr.user_id,
-          name: curr.first_name + ' ' + curr.last_name,
           data: {}
         };
       }
@@ -62,37 +61,38 @@ const TableComponent = () => {
       .filter((date, i, arr) => arr.indexOf(date) === i)
       .sort();
   
-    // create a new array with one element for each user and their timecard data for each date
+    // create a new array with the timecard data for each date
     const tableData = [];
     Object.values(groupedData).forEach((user) => {
-      const userRowData = [user.name];
-      const rowData = [];
+      const rowData = ["Week Data"]; // Add the "Time Information" text to match the heading
       dates.forEach((date) => {
         const timecard = user.data[date];
         if (timecard) {
           timecard.clock_in_times.forEach((time, i) => {
             rowData.push(
-              "",
               time,
               timecard.clock_out_times[i],
               timecard.total_hours
             );
           });
         } else {
-          rowData.push("", "", "", "");
+          rowData.push("", "", "");
         }
       });
-      tableData.push([...userRowData, ...rowData]);
+      tableData.push([...rowData]);
     });
   
     // add the table head
     const tableHead = [
-      "Name",
-      ...dates.flatMap(date => ["", new Date(date).toDateString(), "", "Total Hours"]),
+      "",
+      ...dates.flatMap(date => [new Date(date).toDateString(), "", "Total Hours"]),
     ];
   
     return { tableHead, tableData };
   };
+  
+  
+  
   
 
   
@@ -100,7 +100,7 @@ const TableComponent = () => {
 
   return (
     <View style={styles.table}>
-      <Table borderStyle={{ borderWidth: 20, borderColor: "white" }}>
+      <Table borderStyle={{ borderWidth: 1, borderColor: "white" }}>
         <Row
           data={tableHead}
           style={styles.head}
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "black",
   },
   title: {
     fontSize: 20,
@@ -137,28 +138,34 @@ const styles = StyleSheet.create({
   },
   separator: {
     marginVertical: 30,
-    height: 1,
-    width: "80%",
+    height: 100,
   },
   head: {
-    height: 40,
-    backgroundColor: "#f1f8ff",
+    height: 85,
+    backgroundColor: "#595959",
   },
   headText: {
     height: 40,
-    backgroundColor: "#f1f8ff",
-    color: "black",
+    color: "white",
   },
   text: {
     margin: 6,
-    textAlign: "center",
-    backgroundColor: "#f1f8ff",
+    backgroundColor: "green",
     color: "white",
   },
   row: {
     height: 60,
-    backgroundColor: "#f1f8ff",
+    backgroundColor: "blue",
   },
-  table: { flex: 1, marginTop: 20 },
-  cell: { width: 100, height: 40, backgroundColor: "#f1f8ff" },
+  table: {
+    flex: 1,
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 200,
+    marginRight: 0, 
+    backgroundColor: "#808080",
+    width: "100%",
+    justifyContent: 'center',
+  },
+  cell: { width: 20, height: 40, backgroundColor: "red" },
 });

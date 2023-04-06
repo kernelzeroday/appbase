@@ -30,7 +30,7 @@ export default function AccountInfoScreen() {
   
         {/* user icon */}
         <View style={styles.userIconContainer}>
-          <Ionicons name="person-circle-outline" size={100} color="black" />
+          <Ionicons name="person-circle-outline" size={100} color="white" />
         </View>
   
         <View style={styles.row}>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "black",
     paddingHorizontal: 20,
   },
   infoContainer: {
@@ -147,13 +147,13 @@ const styles = StyleSheet.create({
   userIconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "black",
     paddingHorizontal: 20,
   },
   padding: {
     height: 20,
     width: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "black",
   },
     row: {
     flexDirection: "row",
