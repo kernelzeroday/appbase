@@ -111,7 +111,8 @@ const TableComponent = () => {
     const headers = {
       Authorization: `Bearer ${token}`
     };
-    const response = await fetch('http://localhost:8000/v1/admin/timecard/download', { headers }); // Use fetch to call the API with the token
+    //const response = await fetch('http://localhost:8000/v1/admin/timecard/download', { headers }); // Use fetch to call the API with the token
+    const response = await fetch('http://api.royaltimeclock.com:8000/v1/admin/timecard/download', { headers }); // Use fetch to call the API with the token
     const blob = await response.blob(); // Create a Blob from the API response
     const url = window.URL.createObjectURL(blob);
     const currentDate = new Date().toISOString().split('T')[0]; // Get current date in ISO format (e.g. "2023-03-30")
