@@ -17,7 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { TimesheetResponseModel } from '../client/models/TimesheetResponseModel';
 import { DefaultService } from "../client";
 
-
+// there is an auth bug that doesnt fully log the user out. not sure where its at but will find it!
 const TableComponent = () => {
   const [timecardData, setTimecardData] = useState<TimesheetResponseModel>([]);
 
