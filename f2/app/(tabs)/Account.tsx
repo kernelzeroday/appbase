@@ -8,17 +8,10 @@ import { Ionicons } from "@expo/vector-icons";
 export default function AccountInfoScreen() {
   const data = {
     user_id: 1,
-    first_name: "John",
+    first_name: "Jason",
     last_name: "Doe",
-    email: "john.doe@example.com",
-    date: "2023-03-13",
-    clock_in_times: ["09:00:00"],
-    clock_out_times: ["17:00:00"],
-    total_hours: 8.0,
-    week_number: 11,
+    user_name: "jason_doe",
     week_total_hours: 8.0,
-    month_name: "March",
-    month_total_hours: 8.0,
   };
 
   return (
@@ -27,87 +20,39 @@ export default function AccountInfoScreen() {
       <View style={styles.infoContainer}>
         {/* padding  */}
         <View style={styles.padding} />
-  
+
         {/* user icon */}
         <View style={styles.userIconContainer}>
           <Ionicons name="person-circle-outline" size={100} color="white" />
         </View>
-  
+
         <View style={styles.row}>
-          <Text style={styles.label}>Name:</Text>
+          <Text style={styles.label}>First/Last Name:</Text>
           <View style={styles.dataContainer}>
-            <Text style={styles.data}>
-              {data.first_name} {data.last_name}
-            </Text>
+            <Text style={styles.data}>{data.first_name}{data.last_name}</Text>
           </View>
         </View>
-  
+
+
         <View style={styles.row}>
-          <Text style={styles.label}>Email:</Text>
+          <Text style={styles.label}>username:</Text>
           <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.email}</Text>
+            <Text style={styles.data}>{data.user_name}</Text>
           </View>
         </View>
-  
+
         <View style={styles.row}>
-          <Text style={styles.label}>Date:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.date}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Clock In Time:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.clock_in_times.join(", ")}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Clock Out Time:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.clock_out_times.join(", ")}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Total Hours:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.total_hours}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Week Number:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.week_number}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Week Total:</Text>
+          <Text style={styles.label}>Week Total Hours:</Text>
           <View style={styles.dataContainer}>
             <Text style={styles.data}>{data.week_total_hours}</Text>
           </View>
         </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Month:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.month_name}</Text>
-          </View>
-        </View>
-  
-        <View style={styles.row}>
-          <Text style={styles.label}>Month Total:</Text>
-          <View style={styles.dataContainer}>
-            <Text style={styles.data}>{data.month_total_hours}</Text>
-          </View>
-        </View>
+
       </View>
     </View>
-    );
+  );
 }
+
   
 const styles = StyleSheet.create({
   container: {
@@ -116,16 +61,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "black",
     paddingHorizontal: 20,
+    alignSelf: "center",
+    width: "90%",
+    maxWidth: 400,
   },
   infoContainer: {
     width: "100%",
-    maxWidth: 400,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 5,
+    color: "white",
   },
   dataContainer: {
     flexDirection: "row",
@@ -134,6 +83,7 @@ const styles = StyleSheet.create({
   data: {
     fontSize: 18,
     marginLeft: 10,
+    color: "white",
   },
   buttonContainer: {
     marginTop: 20,
@@ -155,12 +105,9 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "black",
   },
-    row: {
+  row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    },
-
-
-
+  },
 });

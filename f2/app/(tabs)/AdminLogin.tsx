@@ -17,18 +17,21 @@ import { AppContext } from "../_layout";
 import { DefaultService } from "../client";
 
 const SignInScreen = () => {
+
+  // image from assets and fix to window width
+  const logo = require('../../assets/images/repairlogo.jpg');
   
   const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
 
-  const [email, setEmail] = useState("");
+  const [adminuser, setAdminUser] = useState("");
   const [password, setPassword] = useState(""); 
 
   const linkTo = useLinkTo();
 
   const handleSignIn = async () => {
-    const res = await DefaultService.AdminsigninApiV1SigninPost({admin_email: email, admin_password: password});
+    const res = await DefaultService.AdminsigninApiV1SigninPost({admin_user: adminuser, admin_password: password});
     OpenAPI.TOKEN = res.token?.access_token;
-    setEmail("");
+    setAdminUser("");
     setPassword("");
     setIsAdmin(true);
     if (res.token?.access_token) {
@@ -42,20 +45,11 @@ const SignInScreen = () => {
     <NativeBaseProvider>
       <Container style={styles.container} >
         {/* logo from assets  */}
-        {/* <Image
-            source={require("../../assets/images/logo.jpg")}
-            style={{ width: 200, height: 200 }}
-            /> */}
-        {/* vector logo from font awesome */}
-        {/* <FontAwesome name="user-circle" size={200} color="black" /> */}
-
-        <View
-          style={{ flexDirection: "row", backgroundColor: "#eee", padding: 20 }}
-        >
-          <FontAwesome name="clock-o" size={100} color="black" />
+        
+        <View style={{ flexDirection: "row", backgroundColor: "#eee", padding: 20 }}>
+        <Image source={logo} style={{ width: 200, height: 200 }} />
           {/* padding */}
-            <View style={{ width: 20 }} />
-          <FontAwesome name="vcard" size={100} color="black" />
+          <View style={{ width: 20 }} />
         </View>
 
         {/* Login Section */}
@@ -75,11 +69,11 @@ const SignInScreen = () => {
         {/* spacer */}
         <View style={{ height: 10 , marginBottom: 30}} >
         <Input
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          placeholder="Username"
+          value={adminuser}
+          onChangeText={(text) => setAdminUser(text)}
           style={styles.input}
-          keyboardType="email-address"
+          keyboardType="username"
         />
         </View>
         <View style={{ height: 10 }}>
@@ -100,18 +94,6 @@ const SignInScreen = () => {
         <View style={{ width: "70%" }}>
           {/* very small text */}
           <Text style={{ fontSize: 11, color: "#eee"  }}>
-            Welcome to the Royal Admin Time Portal. We take the security and
-            privacy of our users very seriously, and have implemented various
-            measures to ensure the protection of your information. Please note
-            that this is a secure web application, and access is limited to
-            authorized personnel only. We kindly ask that you keep your login
-            credentials confidential and do not share them with anyone. Our
-            system employs advanced encryption technology to safeguard sensitive
-            data, and our team continually monitors the application for any
-            suspicious activity. If you encounter any issues with your login or
-            have any questions about our security measures, please do not
-            hesitate to contact our support team for assistance. Thank you for
-            using the Royal Admin Time Portal.
           </Text>
         </View>
       </Container>
@@ -126,6 +108,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 20,
     backgroundColor: "black",
+    alignSelf: "center",
+    width: "90%",
+    maxWidth: 500,
   },
   title: {
     fontSize: 24,
@@ -144,5 +129,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
 });
+
 
 export default SignInScreen;

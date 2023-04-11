@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View} from "react-native";
 import {
   Container,
   Button,
@@ -17,18 +17,21 @@ import { AppContext } from "../_layout";
 import { DefaultService } from "../client";
 
 const SignInScreen = () => {
+
+  // image from assets and fix to window width
+  const logo = require('../../assets/images/repairlogo.jpg');
   
   const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState(""); 
 
   const linkTo = useLinkTo();
 
   const handleSignIn = async () => {
-    const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+    const res = await DefaultService.signinApiV1SigninPost({user_name: username, user_password: password});
     OpenAPI.TOKEN = res.token?.access_token;
-    setEmail("");
+    setUsername("");
     setPassword("");
     setIsUser(true);
     if (res.token?.access_token) {
@@ -42,21 +45,14 @@ const SignInScreen = () => {
     <NativeBaseProvider>
       <Container style={styles.container} >
         {/* logo from assets  */}
-        {/* <Image
-            source={require("../../assets/images/logo.jpg")}
-            style={{ width: 200, height: 200 }}
-            /> */}
-        {/* vector logo from font awesome */}
-        {/* <FontAwesome name="user-circle" size={200} color="black" /> */}
 
-        <View
-          style={{ flexDirection: "row", backgroundColor: "#eee", padding: 20 }}
-        >
-          <FontAwesome name="clock-o" size={100} color="black" />
+        <View style={{ flexDirection: "row", backgroundColor: "#eee", padding: 20 }}>
+        <Image source={logo} style={{ width: 200, height: 200 }} />
           {/* padding */}
-            <View style={{ width: 20 }} />
-          <FontAwesome name="vcard" size={100} color="black" />
+          <View style={{ width: 20 }} />
         </View>
+
+
 
         {/* Login Section */}
         <Text style={styles.title}>Royal Time Portal - User Login</Text>
@@ -68,18 +64,17 @@ const SignInScreen = () => {
           {/* medium text */}
           {/* center it */}
           <Text style={{ fontSize: 15, textAlign: "center", color: "#eee", marginBottom: 30 }}>
-            Please enter your login credentials below to access the Royal
-            Time Portal.
+            Please enter your login credentials below to access the Royal Time Portal.
           </Text>
         </View>
         {/* spacer */}
         <View style={{ height: 10 , marginBottom: 30}}>
         <Input
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          placeholder="Username"
+          value={username}
+          onChangeText={(text) => setUsername(text)}
           style={styles.input}
-          keyboardType="email-address"
+          keyboardType="username"
         />
         </View>
         <View style={{ height: 10 }}>
@@ -100,18 +95,6 @@ const SignInScreen = () => {
         <View style={{ width: "70%" }}>
           {/* very small text */}
           <Text style={{ fontSize: 11, color: "#eee"  }}>
-            Welcome to the Royal Admin Time Portal. We take the security and
-            privacy of our users very seriously, and have implemented various
-            measures to ensure the protection of your information. Please note
-            that this is a secure web application, and access is limited to
-            authorized personnel only. We kindly ask that you keep your login
-            credentials confidential and do not share them with anyone. Our
-            system employs advanced encryption technology to safeguard sensitive
-            data, and our team continually monitors the application for any
-            suspicious activity. If you encounter any issues with your login or
-            have any questions about our security measures, please do not
-            hesitate to contact our support team for assistance. Thank you for
-            using the Royal Admin Time Portal.
           </Text>
         </View>
       </Container>
@@ -125,6 +108,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
+    alignSelf: "center",
+    width: "90%",
+    maxWidth: 500,
   },
   title: {
     fontSize: 24,

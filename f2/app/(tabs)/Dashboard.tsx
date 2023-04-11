@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { OpenAPI } from '../client/core/OpenAPI';
-
+import moment from 'moment-timezone';
 import { useFocusEffect } from '@react-navigation/native';
 
 import type { TimesheetResponseModel } from '../client/models/TimesheetResponseModel';
@@ -52,6 +52,7 @@ const TableComponent = () => {
       acc[key].data[curr.date].clock_in_times.push(...curr.clock_in_times);
       acc[key].data[curr.date].clock_out_times.push(...curr.clock_out_times);
       acc[key].data[curr.date].total_hours += curr.total_hours;
+      acc[key].data[curr.date].user_timezone = curr.user_timezone;
       return acc;
     }, {});
   
@@ -68,13 +69,13 @@ const TableComponent = () => {
       dates.forEach((date) => {
         const timecard = user.data[date];
         if (timecard) {
-          timecard.clock_in_times.forEach((time, i) => {
-            rowData.push(
-              time,
-              timecard.clock_out_times[i],
-              timecard.total_hours
-            );
-          });
+          const timezone = timecard.user_timezone;
+          const formattedDate = moment.tz(date, timezone).format("ddd MMM DD YYYY");
+          rowData.push(
+            timecard.clock_in_times.join("\n"),
+            timecard.clock_out_times.join("\n"),
+            timecard.total_hours
+          );
         } else {
           rowData.push("", "", "");
         }
@@ -83,9 +84,9 @@ const TableComponent = () => {
     });
   
     // add the table head
-    const tableHead = [
-      "",
-      ...dates.flatMap(date => [new Date(date).toDateString(), "", "Total Hours"]),
+    const tableHead = [    "",    ...dates.flatMap(date => {      const timezone = Object.values(groupedData)[0].data[date].user_timezone;
+        return [moment.tz(date, timezone).format("ddd MMM DD YYYY"), "", "Total Hours"];
+      }),
     ];
   
     return { tableHead, tableData };
@@ -94,6 +95,8 @@ const TableComponent = () => {
   
   
   
+  
+  //test
 
   
   const { tableHead, tableData } = makeTableData(timecardData);
