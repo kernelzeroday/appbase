@@ -54,8 +54,8 @@ def signup_api(user_details: UserSignUpRequestModel):
     This sign-up API allow you to obtain your access token.
     """
     user = register_user(user_details)
-    access_token = auth_handler.encode_token(user['user_email'])
-    refresh_token = auth_handler.encode_refresh_token(user['user_email'])
+    access_token = auth_handler.encode_token(user['user_name'])
+    refresh_token = auth_handler.encode_refresh_token(user['user_name'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
  
@@ -66,9 +66,20 @@ def signin_api(user_details: SignInRequestModel):
     This sign-in API allow you to obtain your access token.
     """
     user = sign_in_user(user_details)
-    access_token = auth_handler.encode_token(user['user_email'])
-    refresh_token = auth_handler.encode_refresh_token(user['user_email'])
+    access_token = auth_handler.encode_token(user['user_name'])
+    refresh_token = auth_handler.encode_refresh_token(user['user_name'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
+
+# user sign out API UserSignoutApiV1SignoutPost
+@app.post('/v1/signout')
+def signout_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This sign-out API allow you to sign out.
+    """
+    token = credentials.credentials
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content={'message': 'User signed out'})
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 
 
@@ -122,7 +133,7 @@ def clockin_api(credentials: HTTPAuthorizationCredentials = Security(security)):
     #print the user to the console
     print("Logged in as: " + user)
 
-    user = save_user_time_by_email_clockin(user)
+    user = save_user_time_by_username_clockin(user)
 
     #get the user id from the user object
     
@@ -146,7 +157,7 @@ def clockout_api(credentials: HTTPAuthorizationCredentials = Security(security))
     print("Logged in as: " + user)
     
     #get the user object from the users email and provide the clock out time
-    user = save_user_time_by_email_clockout(user)
+    user = save_user_time_by_username_clockout(user)
 
     #print the user to the console
     print(user)
@@ -173,7 +184,7 @@ def get_timecard_api(credentials: HTTPAuthorizationCredentials = Security(securi
 
     print("Logged in as: " + user)
 
-    user = get_user_timesheet_by_email(user)
+    user = get_user_timesheet_by_username(user)
 
     #print the user to the console
     print(user)
@@ -198,8 +209,8 @@ def admin_signup_api(admin_details: AdminSignUpRequestModel):
     This admin sign-up API allow you to register your account, and return access token.
     """
     admin = admin_signup(admin_details)
-    access_token = auth_handler.encode_token(admin['admin_email'])
-    refresh_token = auth_handler.encode_refresh_token(admin['admin_email'])
+    access_token = auth_handler.encode_token(admin['admin_user'])
+    refresh_token = auth_handler.encode_refresh_token(admin['admin_user'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
 
 
@@ -210,9 +221,20 @@ def admin_signin_api(admin_details: AdminSignInRequestModel):
     This admin sign-in API allow you to obtain your access token.
     """
     admin = admin_login(admin_details)
-    access_token = auth_handler.encode_token(admin['admin_email'])
-    refresh_token = auth_handler.encode_refresh_token(admin['admin_email'])
+    access_token = auth_handler.encode_token(admin['admin_user'])
+    refresh_token = auth_handler.encode_refresh_token(admin['admin_user'])
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token,'refresh_token': refresh_token}, 'user': admin})
+
+# admin sign out API AdminsignoutApiV1SignoutPost
+@app.post('/v1/admin/signout')
+def admin_signout_api(credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This admin sign-out API allow you to sign out your account.
+    """
+    token = credentials.credentials
+    if (auth_handler.decode_token(token)):
+        return JSONResponse(status_code=200, content={'message': 'Sign out successfully'})
+    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
 
 # get users time data from database for admin view only AdminTimesheetResponseModelAllUsers
 @app.get('/v1/admin/timecard', response_model=list[AdminTimesheetResponseModelAllUsers])
@@ -374,7 +396,7 @@ def admin_user_create_api(admin_details: AdminUserUpdateRequestModel, credential
     print("Logged in as: " + admin)
 
     # get admin data from database
-    user = admin_create_user(admin_details.user_email, admin_details.user_password)
+    user = admin_create_user(admin_details.user_name, admin_details.user_password)
 
     #print the user to the console
     print(user)

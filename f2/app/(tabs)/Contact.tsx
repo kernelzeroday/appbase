@@ -55,7 +55,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "black",
     paddingHorizontal: 20,
-    marginLeft: 200,
+    alignSelf: "center", // center the container horizontally
+    width: "90%", // limit the container's width
+    maxWidth: 500, // limit the container's width
   },
   header: {
     width: "100%",
@@ -71,11 +73,9 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginTop: 20,
-    marginLeft: "auto", // This will center the container horizontally
-    marginRight: "auto", // This will center the container horizontally
     marginBottom: 10,
-    justifyContent: "center", // This will center the contents vertically
-    alignItems: "center", // This will center the contents horizontally
+    justifyContent: "center", // center the contents vertically
+    alignItems: "center", // center the contents horizontally
   },
   label: {
     fontSize: 24,
@@ -85,11 +85,9 @@ const styles = StyleSheet.create({
   },
   dataContainer: {
     flexDirection: "row",
-    marginLeft: "auto", // This will center the container horizontally
-    marginRight: "auto", // This will center the container horizontally
     marginBottom: 10,
-    justifyContent: "center", // This will center the contents vertically
-    alignItems: "center", // This will center the contents horizontally
+    justifyContent: "center", // center the contents vertically
+    alignItems: "center", // center the contents horizontally
   },
   data: {
     fontSize: 16,
@@ -103,5 +101,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
 });
+
 
 export default ContactScreen;

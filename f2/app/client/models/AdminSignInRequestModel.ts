@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type AdminSignInRequestModel = {
-    admin_email: string;
+    admin_user: string;
     admin_password: string;
 };
 

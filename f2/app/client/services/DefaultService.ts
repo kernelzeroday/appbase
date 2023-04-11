@@ -61,6 +61,21 @@ export class DefaultService {
         });
     }
 
+    /** 
+     * user signout api
+     * this sign-out API allow you to log out of current user
+     * @returns any Successful Response
+     * @throws ApiError
+     * 
+     */
+    public static UserSignoutApiV1SignoutPost(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/signout',
+        });
+    }
+
+
     /**
      * Refresh Token Api
      * This refresh-token API allow you to obtain new access token.
@@ -185,19 +200,34 @@ export class DefaultService {
      * @returns UserAuthResponseModel Successful Response
      * @throws ApiError
      */
- public static AdminsigninApiV1SigninPost(
-    requestBody: AdminSignInRequestModel,
-): CancelablePromise<UserAuthResponseModel> {
-    return __request(OpenAPI, {
-        method: 'POST',
-        url: '/v1/admin/signin',
-        body: requestBody,
-        mediaType: 'application/json',
-        errors: {
-            422: `Validation Error`,
-        },
-    });
-}
+    public static AdminsigninApiV1SigninPost(
+        requestBody: AdminSignInRequestModel,
+    ): CancelablePromise<UserAuthResponseModel> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/signin',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Admin Signout Api
+     * This sign-out API allow you to log out of current user
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+
+    public static AdminsignoutApiV1SignoutPost(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/signout',
+        });
+    }
+
 
     /**
      * Get Timecard Api
