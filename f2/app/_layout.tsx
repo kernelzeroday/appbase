@@ -1,23 +1,31 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { SplashScreen, Stack } from "expo-router";
+import React from "react";
+import { useEffect } from "react";
+import { useColorScheme } from "react-native";
+import Toast from 'react-native-toast-message';
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
+export const AppContext = React.createContext(null);
+
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
@@ -28,23 +36,37 @@ export default function RootLayout() {
 
   return (
     <>
+
+
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
       {!loaded && <SplashScreen />}
       {loaded && <RootLayoutNav />}
+
     </>
   );
 }
 
+
 function RootLayoutNav() {
+  const [isUser, setIsUser] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
   const colorScheme = useColorScheme();
 
   return (
     <>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <AppContext.Provider value={{
+            isUser: isUser,
+            setIsUser: setIsUser,
+            isAdmin: isAdmin,
+            setIsAdmin: setIsAdmin}}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            </Stack>
+            <Toast/>
+        </AppContext.Provider>
       </ThemeProvider>
     </>
   );

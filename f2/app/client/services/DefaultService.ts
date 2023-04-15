@@ -1,11 +1,16 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AdminAuthResponseModel } from '../models/AdminAuthResponseModel';
+import type { AdminSignInRequestModel } from '../models/AdminSignInRequestModel';
+import type { AdminSignUpRequestModel } from '../models/AdminSignUpRequestModel';
+import type { AdminTimesheetResponseModelAllUsers } from '../models/AdminTimesheetResponseModelAllUsers';
+import type { AdminUserUpdateRequestModel } from '../models/AdminUserUpdateRequestModel';
 import type { SignInRequestModel } from '../models/SignInRequestModel';
-import type { SignUpRequestModel } from '../models/SignUpRequestModel';
+import type { TimesheetResponseModel } from '../models/TimesheetResponseModel';
 import type { UserAuthResponseModel } from '../models/UserAuthResponseModel';
 import type { UserResponseModel } from '../models/UserResponseModel';
-import type { UserUpdateRequestModel } from '../models/UserUpdateRequestModel';
+import type { UserSignUpRequestModel } from '../models/UserSignUpRequestModel';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -15,13 +20,13 @@ export class DefaultService {
 
     /**
      * Signup Api
-     * This sign-up API allow you to register your account, and return access token.
+     * This sign-up API allow you to obtain your access token.
      * @param requestBody
      * @returns UserAuthResponseModel Successful Response
      * @throws ApiError
      */
     public static signupApiV1SignupPost(
-        requestBody: SignUpRequestModel,
+        requestBody: UserSignUpRequestModel,
     ): CancelablePromise<UserAuthResponseModel> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -113,18 +118,146 @@ export class DefaultService {
     }
 
     /**
-     * Update User Api
-     * This user update API allow you to update user data.
-     * @param requestBody
-     * @returns UserResponseModel Successful Response
+     * Clockin Api
+     * This clockin API allow you to set clock in time.
+     * @returns any Successful Response
      * @throws ApiError
      */
-    public static updateUserApiV1UserUpdatePost(
-        requestBody: UserUpdateRequestModel,
-    ): CancelablePromise<UserResponseModel> {
+    public static clockinApiV1ClockinPost(): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/v1/user/update',
+            url: '/v1/clockin',
+        });
+    }
+
+    /**
+     * Clockout Api
+     * This clockout API allow you to set clock out time.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static clockoutApiV1ClockoutPost(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/clockout',
+        });
+    }
+
+    /**
+     * Get Timecard Api
+     * This timecard API allow you to fetch specific user data.
+     * @returns TimesheetResponseModel Successful Response
+     * @throws ApiError
+     */
+    public static getTimecardApiV1TimecardGet(): CancelablePromise<Array<TimesheetResponseModel>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/timecard',
+        });
+    }
+
+    /**
+     * Admin Signup Api
+     * This admin sign-up API allow you to register your account, and return access token.
+     * @param requestBody
+     * @returns AdminSignUpRequestModel Successful Response
+     * @throws ApiError
+     */
+    public static adminSignupApiV1AdminSignupPost(
+        requestBody: AdminSignUpRequestModel,
+    ): CancelablePromise<AdminSignUpRequestModel> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/signup',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Admin Signin Api
+     * This admin sign-in API allow you to obtain your access token.
+     * @param requestBody
+     * @returns AdminSignInRequestModel Successful Response
+     * @throws ApiError
+     */
+    public static adminSigninApiV1AdminSigninPost(
+        requestBody: AdminSignInRequestModel,
+    ): CancelablePromise<AdminAuthResponseModel> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/signin',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Get Timecard Api
+     * This timecard API allow you to fetch specific user data.
+     * @returns AdminTimesheetResponseModelAllUsers Successful Response
+     * @throws ApiError
+     */
+    public static getTimecardApiV1AdminTimecardGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/timecard',
+        });
+    }
+
+    /**
+     * Get Timecard Download Api
+     * This TimeCard Download API allow you to fetch specific user data.
+     * @returns AdminTimesheetResponseModelAllUsers Successful Response
+     * @throws ApiError
+     */
+    public static getTimecardDownloadApiV1AdminTimecardDownloadGet(): CancelablePromise<Array<AdminTimesheetResponseModelAllUsers>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/timecard/download',
+        });
+    }
+
+    /**
+     * Admin User Create Api
+     * This admin user create API allow you to create user.
+     * @param requestBody
+     * @returns AdminUserUpdateRequestModel Successful Response
+     * @throws ApiError
+     */
+    public static adminUserCreateApiV1AdminUserCreatePost(
+        requestBody: AdminUserUpdateRequestModel,
+    ): CancelablePromise<AdminUserUpdateRequestModel> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/user/create',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Admin User Update Api
+     * This admin user update API allow you to update user password.
+     * @param requestBody
+     * @returns AdminUserUpdateRequestModel Successful Response
+     * @throws ApiError
+     */
+    public static adminUserUpdateApiV1AdminUserUpdatePost(
+        requestBody: AdminUserUpdateRequestModel,
+    ): CancelablePromise<AdminUserUpdateRequestModel> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/user/update',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

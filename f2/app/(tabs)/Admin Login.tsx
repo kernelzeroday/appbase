@@ -17,7 +17,7 @@ import { AppContext } from "../_layout";
 
 import { DefaultService } from "../client";
 
-const SignInScreen = () => {
+const AdminSignInScreen = () => {
   
   const { isUser, setIsUser, isAdmin, setIsAdmin } = React.useContext(AppContext);
 
@@ -25,7 +25,7 @@ const SignInScreen = () => {
   const [password, setPassword] = useState(""); 
 
   const linkTo = useLinkTo();
-
+  
   const showLoginSuccess = () => {
     Toast.show({
       type: 'success',
@@ -34,15 +34,16 @@ const SignInScreen = () => {
     });
   }
 
+
   const handleSignIn = async () => {
-    const res = await DefaultService.signinApiV1SigninPost({user_email: email, user_password: password});
+    const res = await DefaultService.adminSigninApiV1AdminSigninPost({admin_email: email, admin_password: password});
     OpenAPI.TOKEN = res.token?.access_token;
     if (res.token?.access_token) {
       showLoginSuccess();
       setEmail("");
       setPassword("");
-      setIsUser(true);
-      linkTo('/Dashboard');
+      setIsAdmin(true);
+      linkTo('/AdminTimeDash');
     }
 
     // TODO error handling
@@ -50,7 +51,7 @@ const SignInScreen = () => {
 
   return (
     <NativeBaseProvider>
-      <View style={styles.container}>
+      <View style={styles.container} >
         {/* logo from assets  */}
         {/* <Image
             source={require("../../assets/images/logo.jpg")}
@@ -69,7 +70,7 @@ const SignInScreen = () => {
         </View>
 
         {/* Login Section */}
-        <Text style={styles.title}>Time Portal Login</Text>
+        <Text style={styles.title}>Admin Login</Text>
         {/* test button */}
         {/* <Button title="Test" onPress={ClientTestFunc} />  */}
 
@@ -110,15 +111,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#000000" ,
+    color: "#eee" ,
   },
   input: {
     marginBottom: 10,
-    color: "#000000" ,
+    color: "#eee" ,
   },
   button: {
     marginTop: 20,
   },
 });
 
-export default SignInScreen;
+export default AdminSignInScreen;

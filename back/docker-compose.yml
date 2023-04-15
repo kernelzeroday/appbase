@@ -1,0 +1,30 @@
+version: '3'
+services:
+  crm2-mysql:
+    container_name: crm2-mysql
+    build: ./mysql/
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/db:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=archmage
+      - MYSQL_DATABASE=fastapi_app
+    tty: true
+  crm2-api:
+    depends_on:
+      - crm2-mysql
+    container_name: fast_api
+    build: ./api
+    restart: always
+    tty: true
+    volumes:
+      - ./api:/app
+    ports:
+      - 8000:8000
+    environment:
+      - APP_SECRET_STRING=archmage
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=archmage
+      - DATABASE=fastapi_app
+      - DATABASE_HOST=crm2-mysql
