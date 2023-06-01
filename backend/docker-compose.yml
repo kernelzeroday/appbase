@@ -2,7 +2,6 @@ version: '3'
 services:
   appbase-mysql:
     container_name: appbase-mysql
-    platform: linux/x86_64
     build: ./mysql/
     ports:
       - "3306:3306"
@@ -12,11 +11,10 @@ services:
       - MYSQL_ROOT_PASSWORD=archmage
       - MYSQL_DATABASE=fastapi_app
     tty: true
-  api:
+  appbase-api:
     depends_on:
       - appbase-mysql
-    container_name: fast_api
-    platform: linux/x86_64
+    container_name: appbase_fast_api
     build: ./api
     restart: always
     tty: true
